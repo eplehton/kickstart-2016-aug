@@ -1,0 +1,132 @@
+---
+title: "Plotting with ggplot2"
+author: "Esko & Markus"
+date: "08.07.2016"
+output: html_document
+---
+
+
+Dataset
+====================
+We will load the dataset created in section "Merging two data frames", which involves game performance and working memory test data. 
+
+```{r}
+game.wmc <- read.table("kr_gamewmc.txt", header=T)
+
+# and let's calculate accuracy again
+game.wmc$accuracy <- game.wmc$Phit + game.wmc$PcorrectRejection
+
+```
+
+
+ggplot2 package
+===============================
+
+The built-in plotting commands in R are powerful, but may not be very intuitive to use. 
+Luckily, there are many packages which provide alternative ways for plotting data. 
+ggplot2 is one of our favorites. 
+
+The basic idea is simple: First you map the variables of the data frame to elements of the plot (yes, ggplot2 eats only data frames!) Then you add different representation units or "layers" to the plot. 
+
+For instance, when creating a scatter plot, you map one of the variables of the data frame to the x-axis of the plot and another variable to the y-axis. Then, different layers are added to the plot to bring in additional information. The basic mapping can be thought of as a transparency on a projector on which you first draw the essential information you want to represent. Then the layers can be thought of additional transparencies on which you draw other information, such as a regression line on the scatter plot. 
+
+First, there are examples which replicate some previous plots, this time using ggplot2.
+
+In order to visualize an association between two continous variables, a scatter plot would be perfect. 
+Here, the basic mapping is defined in the first "aes" command. Then, we choose to use points "geom_point" to represent the information. We could have used also something else than points; for example, "geom_text" plots text.
+
+```{r}
+require(ggplot2)
+
+ggplot(game.wmc, aes(x=pcu_score, y=accuracy)) + geom_point() 
+
+ggplot(game.wmc, aes(x=pcu_score, y=accuracy)) + geom_point(size=4) 
+
+ggplot(game.wmc, aes(x=pcu_score, y=accuracy)) + geom_point(size=4, colour="blue") 
+```
+
+Let's first add some more mapping between aesthetics and data. In ggplot-speak, "aesthetic" refers to anything you can see. Let's add a mapping to colour...
+
+```{r}
+ggplot(game.wmc, aes(x=pcu_score, y=accuracy, colour=age_grp)) + 
+  geom_point() 
+
+```
+... and shape.
+
+```{r}
+ggplot(game.wmc, aes(x=pcu_score, y=accuracy, colour=age_grp, shape=age_grp)) + 
+  geom_point() 
+
+```
+
+Next we can add a new layer (think of adding a transparency). geom_smooth with paramter method="lm" will fit a regression line to data.
+
+```{r}
+ggplot(game.wmc, aes(x=pcu_score, y=accuracy)) + 
+  geom_point() +
+  geom_smooth(method="lm")
+```
+
+Mentioning colour and/or shape in the aesthetic mapping has now the effect of fitting separate regression lines according to the values of the grouping aesthetic (here: colour and shape).
+
+```{r}
+ggplot(game.wmc, aes(x=pcu_score, y=accuracy, colour=age_grp, shape=age_grp)) + 
+  geom_point() +
+  geom_smooth(method="lm")
+```
+
+If we wish, we can override this by defining group=1.
+
+```{r}
+ggplot(game.wmc, aes(x=pcu_score, y=accuracy, colour=age_grp, shape=age_grp, group=1)) + 
+  geom_point() +
+  geom_smooth(method="lm")
+```
+
+
+Boxplots
+--------------------------
+
+```{r}
+ggplot(game.wmc, aes(x=age_grp, y=accuracy, colour=age_grp)) + 
+  geom_boxplot()
+```
+
+Mean and CI
+--------------------
+```{r}
+ggplot(game.wmc, aes(x=age_grp, y=accuracy, colour=age_grp)) + 
+  stat_summary(fun.data="mean_cl_normal", size=2)
+```
+
+
+Histogram and density
+--------------------
+Note how we need to change the mapping between variables and plot objects accordingly.
+```{r}
+ggplot(game.wmc, aes(x=accuracy)) + 
+  geom_histogram()
+
+ggplot(game.wmc, aes(x=accuracy)) + 
+  geom_density()
+
+ggplot(game.wmc, aes(x=accuracy, colour=age_grp)) + 
+  geom_density()
+```
+
+Making two plots using a grouping variable
+------------------------------------------------
+```{r}
+
+ggplot(game.wmc, aes(x=pcu_score, fill=age_grp)) + 
+  geom_histogram() +
+  facet_grid(age_grp ~ .)
+
+ggplot(game.wmc, aes(x=pcu_score, fill=age_grp)) + 
+  geom_histogram() +
+  facet_grid(. ~ age_grp)
+
+```
+
+
