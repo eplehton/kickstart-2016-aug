@@ -129,4 +129,11 @@ ggplot(game.wmc, aes(x=pcu_score, fill=age_grp)) +
 
 ```
 
+Saving plots
+-----------------------------------------------
+The plots can be saved using function ggsave. By default it saves the last ggplot object created.
 
+```{r}
+ggsave("sample_plot.png", height=10, width=10, units="cm", dpi=300)
+
+```
