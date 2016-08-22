@@ -1,0 +1,109 @@
+---
+title: "Comparing groups"
+author: "Esko & Markus"
+date: "22.08.2016"
+output: html_document
+---
+
+The next topic is about comparing two groups of observations. 
+
+Dataset
+------------
+We will use a subset of data from an experiment, where a group of children and a group of adults played a learning game. 
+
+In the game, the participants watched video clips filmed from bicyclist's perspective. Their task was to keep an eye on relevant targets, e.g. the other road users. In each video clip, the video was suddenly masked and 2-4 circles were drawn on the masked screen. The players' task was to select all those circles, which were at the location where some other road users was present at the moment when the video was stopped and masked (see Figures below). 
+
+![Participants watched videos and their task was to pay attention to other road users](peli_video.png)
+
+![Suddenly the video was masked and the players' task was to select the locations where was a road user at the momennt when the video was masked](peli_peitetty.png)
+
+The dataset contains the following variables:
+- player_id : participant id
+- age_grp : C = children, A = adult
+- Phit : the proportion of correctly selected circles
+- Pmiss  : the proportion of circles which should have been selected but were not not
+- PfalseAlarma: the proportion of circles which were selected but which did not have a road user on their location
+- PcorrectRejection: the proportion of circles which were correctly left unselected
+
+Reading and viewing the data
+---------------------
+```{r}
+
+game <- read.table("kr_game.txt", header=TRUE)
+head(game)
+
+```
+
+Question: Do adults perform better than children?
+====================================================
+
+Next we investigate if adults performe better than children in the game. 
+
+First we need a measure for performance. One way to characterize the performance in the game is to calculate the accuracy of the responses. Accuracy can be defined as the proportion of hits (correctly selected) plus the proportion of correct rejections (correctly left unselected). 
+
+```{r}
+game$accuracy <- game$Phit + game$PcorrectRejection
+
+```
+
+
+Boxplot
+--------------------
+
+Second, we could visualize the group difference. I prefer to plot the data first, before calculating any descriptive statistics or performing statistical tests. 
+
+Because the variable of interest, _accuracy_, is a continous variable, a boxplot is a very practical way to summarise it. 
+
+Boxplots are created with a function (unsurprisingly) called _boxplot_. There are three ways to use this function. 
+
+First, it is possible to give it a single vector, which will show the distribution of all the accuracy values.
+
+```{r}
+boxplot(game$accuracy)
+```
+
+Second, it is possible to give it a formula (what variables to plot) and a data frame (what data to use). 
+
+Formulas in R involve the tilde character ~. The variable on the left of the tilde is the variable to be plotted, and the variable on the right is the grouping variable. The grouping variable should be a variable of type _factor_ (= nominal or ordered variable) when used with function boxplot. In practice, the function call says "please make a boxplot of accuracy by age group, and look for the variables in the data frame given as an argument".  
+
+
+```{r}
+boxplot(accuracy ~ age_grp, game)
+```
+
+Third, it is also possible to give the data frame itself as an argument. In this case, a separate boxplot will be made for each continous variable. With some data frames this can be useful, but here it is just ugly. 
+
+```{r} 
+boxplot(game) 
+```
+
+t-test
+-------------------------
+
+Using the formula notation, it is easy to perform a between groups t-test. Here accuracy is a dependent variables and it goes to the left side of ~, and age_grp an independent variable. 
+
+Note that this is exactly the same formula as with the boxplot of group difference. You can think formulas as a way to define dependent and independent variables for your data. Then this definition can be used to produce plots as well as to perform statistical tests.
+
+```{r}
+t.test(accuracy ~ age_grp, game)
+
+```
+
+Typically, it would be just fine to copy the information from the output to an article manuscript.
+However, sometimes it would be useful to have a programmatic access to the results of a test. In R, it is possible, even quite easy. Look at the documentation of the function _t.test_. Under the heading _Value_, you can find a list of the components that the return values contains. You can access these components using the dollar sign notation ($).  
+
+```{r}
+
+res <- t.test(accuracy ~ age_grp, game)
+
+res$estimate # estimated means
+res$estimate[1] # this is actually a vector, even though it contains the name. In R, numerical vectors can have names:
+str(res$estimate[1])
+res$estimate[2]
+
+res$conf.int
+res$conf.int[1]
+res$conf.int[2]
+```
+
+

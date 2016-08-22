@@ -1,0 +1,158 @@
+---
+title: "Aggregating data"
+author: "Esko"
+date: "22.08.2016"
+output: html_document
+---
+  
+In the previous example, we compared the performance of children and adults in the learning game and also investigated the association between the game performance and the working memory test. We had a neatly formatted data, where each participant formed a case and a couple of variables summarized the participant's performance. 
+
+However, this is not the original data we collected. The original data was is a completely different format. I used a script written in R to transform it to an intermediate format, where each answer format a case in the dataset. This data is available in file kr_gameraw.txt.
+
+```{r}
+
+game.raw <- read.table("kr_gameraw.txt", header=T)
+head(game.raw)
+```
+
+The variables in the dataset are the following:
+- player_id : the participant id
+- age_grp: A = adult participant, C = child participant
+- gender ; Nainen = female, Mies = male
+- clip_id : Specifies the video clip watched. There was 30 clips in random order.
+- video_id : video_id tells the position of the video watched in the sequence. Values range from 0 (the first) to 29 (the last).
+- location_id : Identifies the locations presented for the clip. Remember, the task is to select those locations where was a road user at the time when the video was masked
+- correctRejection, falseAlarm, miss, hit : TRUE or FALSE depending on the answer and location. 
+
+Question: How to calculate the proportion of hits, misses etc.
+-----------------------------------------------------------------
+
+We had values Phit, Pmiss, PfalseAlarm, PcorrectRejection etc. which we used in the calculations. Basically, each of there represent the proportion of TRUEs in the variable among all the answers for each participant.
+
+First, we need to understandhow R deals with boolean values (TRUE, FALSE). R treats TRUE essentially equivalent to 1 and FALSE as equivalent to 0. 
+
+```{r}
+
+TRUE == 1
+FALSE == 0
+TRUE == 0
+FALSE == 1
+```
+This happens also with other operators and functions:
+
+```{r}
+
+TRUE + TRUE
+TRUE - TRUE
+(TRUE + FALSE + TRUE) / 3
+
+mean(c(TRUE, FALSE, TRUE))
+sum(c(TRUE, FALSE, TRUE))
+```
+
+This means that it is possible to calculate the proportion of TRUEs in a vector using for example mean function. 
+
+```{r}
+tfs <- c(TRUE, TRUE, FALSE, TRUE, FALSE)
+mean(tfs)
+
+```
+
+In other words, we could calculate the proportion of hits among all the answers in the following way:
+
+```{r}
+mean(game.raw$hit)
+
+```
+But we want to calculate this (and other values) for each participant and store the results into a new variable in a new data frame. This is called aggregation, and there is a very useful package called plyr to do this kind of work. 
+
+
+Plyr: split, apply and combine
+-------------------------------------------------
+  
+We have already seen how to calculate new values from existing variables. Then we have seen how to create a subsets of data. Next we combine these two things to have an extremely useful and powerful data manipulation techinique: split, apply and combine. After you master this, you will survive most of the data manipulation problems you will encounter. 
+
+Splitting means that we first divide the data frame by some variable(s), typically factor(s). Then we apply one of more functions to calculate new variables from the subsets of data. Then we combine the calculated variables together with the values which were used as a basis for splitting. 
+
+The package plyr combines these three operations into a single command. 
+
+```{r}
+require(plyr)
+
+params <- ddply(game.raw, .(player_id), summarise,
+                  Phit = mean(hit))
+head(params)
+
+```
+
+We got a new data frame which contains the player_id and the proportion of the hits. 
+
+The call has the parts:
+
+- ddply : The function called, Here dd refers to the fact the this function wants a data frame and will produce a new dataframe. 
+- game.raw : The first argument specifies the data frame given as input   
+- .(player_id) : Specifies by which variable the data frame is to be splitted to pieces. The variable should factor. If it is not, it will be converted to one. 
+- summarise : Is a function which will be called for each piece. 
+- Phit = mean(hit) : This tells to summarize, that we want to calculate mean of values in the variable hit and create a new variable called Phit to store the result. 
+
+Note that function summarize instead of summarise may work also... sometimes, but there is a possibility for a name clash with package Hmisc. 
+
+More than one grouping variable
+-------------------------------------------
+
+In case we would like to keep the information about the age group for each participant, it is possible by just inserting age_grp as another grouping variable. 
+
+```{r}
+params <- ddply(game.raw, .(age_grp, player_id), summarise,
+                  Phit = mean(hit))
+
+head(params)
+```
+Here adding age_grp variable to the grouping factors does not affect the Phit values calculated, because each player_id belongs to either to adult or children group. It does not matter weather age_grp is inserted before or after player_id. 
+
+Now we can actually calculate the dataset we previously used by adding more calculations.
+```{r}
+params <- ddply(game.raw, .(age_grp, gender, player_id), summarise,
+                  Phit = mean(hit),
+                  Pmiss = mean(miss),
+                  PfalseAlarm = mean(falseAlarm),
+                  PcorrectRejection = mean(correctRejection))
+head(params)
+
+write.table(params, file="kr_game.txt", row.names=F)
+
+```
+
+Calculating descriptive statistics using plyr
+--------------------------------------------------
+As we now have a single observation for each participant, we can get some descriptive statistics for the age groups using the same command again. 
+```{r}
+
+desc <- ddply(params, .(age_grp), summarise, 
+                      M = mean(Phit),
+                      SD = sd(Phit),
+                      N = length(Phit))
+print(desc)
+
+```
+
+We could use function kable from package knirt to render this in a nicer way.  
+```{r}
+require(knitr)
+kable(desc, digits=2)
+```
+
+And if we would like to change the proportions to percents, we can just multiply by 100. 
+```{r}
+
+desc <- ddply(params, .(age_grp), summarise, 
+                      M = mean(100*Phit),
+                      SD = sd(100*Phit),
+                      N = length(Phit))
+kable(desc, digits=0)
+```
+
+Idea for an exercise: 
+Calculate 95 % CI using t.test -function
+Calculate Cohen's d?
+

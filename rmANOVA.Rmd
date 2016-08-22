@@ -1,0 +1,152 @@
+---
+title: "rmANOVA"
+author: "Esko"
+date: "01.07.2016"
+output: html_document
+---
+
+
+Dataset
+----------------
+
+We start with the raw game data from the previous sections.
+
+```{r}
+game.raw <- read.table("kr_gameraw.txt", header=T)
+head(game.raw)
+```
+
+The data was about learning game, where each player player 30 video clips. 
+
+Question: Did players performance improve while playing the game? 
+-------------------------------------------------------------------
+
+A very straigforward way to examine this question would be to divide the 30 videos clips to three sets, each containing 10 clips. Then we could calculate -- that is, aggregate -- the Phit value by each set and player. 
+
+Recoding video_id to set
+--------------------------
+There is variable video_id, which coded the order of the videos from 0 to 29. We can use it to form a new variable set. 
+
+```{r}
+# Using a quite easy to understand recode function from package car
+require(car)
+game.raw$set <- recode(game.raw$video_id, "0:9=1; 10:19=2; 20:29=3")
+
+# Making the same thing with some math and using function floor to round downwards. 
+# E.g. 7 / 10 = 0.7; floor(0.7) = 0; 0 + 1 = 1
+game.raw$set2 <- floor(game.raw$video_id / 10) + 1
+
+# The results are identical. It is up to you which one to use.  
+game.raw$set == game.raw$set2
+```
+
+Finally, it is a good to convert set explicitly to ordered factor.
+
+```{r}
+game.raw$set <- ordered(game.raw$set)
+```
+
+
+Aggregation by player and set
+--------------------------------
+```{r}
+require(plyr)
+params <- ddply(game.raw, .(age_grp, player_id, set), summarize,
+                  Phit = mean(hit))
+
+head(params)
+```
+
+We could also include more parameters to the calculation.
+
+```{r}
+params <- ddply(game.raw, .(age_grp, player_id, set), summarize,
+                  Phit = mean(hit),
+                  PcorrectRejection = mean(correctRejection),
+                  accuracy = Phit + PcorrectRejection)
+head(params)
+```
+
+We calcualte both Phit and PcorrectRejection. Then we calculate accuracy by adding them. This is possible already here, because the variable Phit and PcorrectRejection are created before accuracy. 
+
+
+In order to answer the question, it would be great to make first a plot and then repeated measures ANOVA. In the next section we will use ggplot2 to make some fancier plots, but let's just stick to the R's in-built plotting tools.  
+
+```{r}
+# boxplot
+boxplot(accuracy ~ set + age_grp, params)
+
+# and this could be used to summarise the effects using means
+interaction.plot(params$set, params$age_grp, params$accuracy)
+```
+
+Repeated-measures ANOVA
+-------------------------
+
+Making repeated measures ANOVAs in R are is a bit complicated using the in-built functions because you need to understand what you are doing. There I recommed using package ez. 
+
+
+```{r}
+##################################################################################
+# Before making anovas with R, set the default contrasts to orthogonal, 
+# if want to have results comparable to SPSS. 
+#
+# Especially, if you want to use type III Sum of Squares like in SPSS by default, 
+# you MUST use orthogonal contrasts! Otherwise your results may be wrong. 
+##################################################################################
+options(contrasts = c("contr.sum", "contr.poly")) 
+
+require(ez)
+fm <- ezANOVA(params, 
+        dv=accuracy,
+        wid=player_id,
+        within = .(set),
+        between = .(age_grp),
+        type=3) # we ask type III Sum of Squares
+# If you didn't convert set to a factor, you will run into problems here, because ezANOVA treats it 
+# numeric and it confuses it
+
+print(fm)
+```
+
+How about the post-hoc testing? Ask the ezANOVA to provide the linear model also, and then feed it to lsmeans. 
+
+```{r}
+# I repeat this here: Orthogonal contrasts never forget with type III Sum of Squares! 
+options(contrasts = c("contr.sum", "contr.poly")) 
+
+fm <- ezANOVA(params, 
+        dv=accuracy,
+        wid=player_id,
+        within = .(set),
+        between = .(age_grp),
+        type=3,
+        return_aov=T) # get the model
+
+require(lsmeans)
+
+# pairwise post-hocs
+lsmeans(fm$aov, pairwise ~ set)
+# with summary, you can get e.g. bonferroni or holm adjusted pairwise comparisons
+summary(lsmeans(fm$aov, pairwise ~ set), adjust="bonferroni") 
+summary(lsmeans(fm$aov, pairwise ~ set), adjust="holm") 
+
+
+# polynomial contrast
+lsmeans(fm$aov, poly ~ set)
+```
+
+Because we the main effect of set was significant (and the interaction was not), and the polynomial contrasts indicate positive linear effect, we can conclude that the players are learning.
+
+```{r}
+# It is possible to investigate interactions also, but remember that 
+# F test for interaction was not significant. So there are for 
+# illustration only.
+
+# a bit complicated and makes too many tests
+lsmeans(fm$aov, pairwise ~ set*age_grp)
+
+# maybe better
+lsmeans(fm$aov, pairwise ~ set | age_grp)
+lsmeans(fm$aov, poly ~ set | age_grp)
+```

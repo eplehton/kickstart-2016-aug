@@ -1,0 +1,100 @@
+---
+title: "Testing for association between two continous variables"
+author: "Esko, commented by Markus"
+date: "22.08.2016"
+output: html_document
+---
+
+
+Dataset
+-------------------
+We will load the dataset created in section _Merging two data frames_, where we combined the dataset containing game performance data with that containing working memory test data. 
+
+```{r}
+game.wmc <- read.table("kr_gamewmc.txt", header=T)
+```
+
+
+Question: Is accuracy in the game associated with working memory capacity?
+--------------------
+
+Let's calculate _accuracy_ anew:
+```{r}
+game.wmc$accuracy <- game.wmc$Phit + game.wmc$PcorrectRejection
+```
+
+In order to visualize an association between two continous variables, a scatter plot would be perfect. 
+
+```{r}
+plot(game.wmc$pcu_score, game.wmc$accuracy) 
+```
+
+We can also calculate Pearson correlation (the default for the function _cor_). 
+
+```{r}
+cor(game.wmc$pcu_score, game.wmc$accuracy) 
+```
+
+But there were two missing values in the working memory test. We can either remove them, or instruct cor function to use only complete observations.
+
+```{r}
+cor(game.wmc$pcu_score, game.wmc$accuracy, use="complete.obs") 
+```
+
+With cor.test, it is possible to calculate the significance of the correlation, also. Note that missing values are removed by default.
+
+```{r}
+cor.test(game.wmc$pcu_score, game.wmc$accuracy)  
+```
+
+We could also use a linear regression model to predict accuracy based on the working memory score. 
+
+```{r}
+fm <- lm(accuracy ~ pcu_score, game.wmc)
+summary(fm)
+```
+
+The function _summary_ is useful for inspecting the model. The fitted model can be also given to plot command, which produces plots related to regression diagnostics. 
+
+```{r}
+plot(fm)
+```
+
+Remember that you can also access the information presented in summary and plot functions programmatically. See the documentation of lm for details. 
+
+```{r}
+resid(fm) # residuals using a function resid
+fm$resid # residuals using $-notation
+
+```
+
+Finally, we could calculate the F-statistics for all the terms using the _anova_ function. In this case, the relevant F statistic was already available in the summary because the model had only a single predictor. 
+
+```{r}
+anova(fm)
+```
+
+
+Association of pcu_score after control for gender
+-----------------------------------------------------
+
+We could add categorical variables to the model, also.
+
+```{r}
+
+fm1 <- lm(accuracy ~ pcu_score, game.wmc)
+summary(fm1)
+
+fm2 <- lm(accuracy ~ pcu_score + gender, game.wmc)
+summary(fm2)
+```
+
+From the output, we can see that including the main effect of gender does not make the model better. We can test this explicitly. 
+
+```{r}
+anova(fm1, fm2) # by default F-test
+anova(fm1, fm2, test="Chisq")
+```
+
+
+

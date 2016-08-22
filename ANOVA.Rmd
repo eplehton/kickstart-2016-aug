@@ -1,0 +1,151 @@
+---
+title: "ANOVA"
+author: "Esko"
+date: "22.08.2016"
+output: html_document
+---
+
+
+In the following, we will demonstrate how you would calculate one way or two-way ANOVAs in R. 
+
+We will use the same data as in the _Testing for association between two continous variables_.
+
+
+```{r}
+game.wmc <- read.table("kr_gamewmc.txt", header=T)
+game.wmc$accuracy <- game.wmc$Phit + game.wmc$PcorrectRejection
+```
+
+Then we will investigate accuracy as a function of age group and gender. 
+
+Basically, because we are using a linear model, we can use function lm. 
+
+```{r}
+
+# single main effect models
+fm.a <- lm(accuracy ~ age_grp, game.wmc)
+fm.g <- lm(accuracy ~ gender, game.wmc)
+
+# both main effects
+fm.ag <- lm(accuracy ~ age_grp + gender, game.wmc)
+
+# main effects and interaction
+fm.ag <- lm(accuracy ~ age_grp * gender, game.wmc)
+
+# this a shorthand for writing
+fm.ag2 <- lm(accuracy ~ age_grp + gender + age_grp:gender, game.wmc)
+
+```
+
+We could use function anova to compare the models, and then select what to choose. But what if we would like to get the F-values for effects, in the exactly same way as in SPSS?
+
+We could write 
+```{r}
+anova(fm.ag)
+```
+
+Unfortunately, this may not be what you wanted. Especially, the output is not the same as in SPSS by default.
+
+R's anova calculates Type I Sum of Squares
+--------------------------------------------------------
+
+R's anova function give type I Sum of Squares, but SPSS tells us type III Sum of Squares by default. We can get type III Sum of Squares using function Anova from package car.
+
+```{r}
+
+anova(fm.ag)
+library(car)
+Anova(fm.ag, type=3)
+
+```
+If you compare the outputs, you will see that the results are different. 
+
+Type of Sum of Squares matters when the data is unbalanced
+---------------------------------------------------------------------
+
+Both methods would produce exactly the same results, if the data were balanced. However, we have a different number of males in adult group than in children group etc. (You could actually ask if there is any point to make ANOVA with small number of observations, but let's continue anyway.)
+
+```{r}
+with(game.wmc, table(age_grp, gender))
+```
+
+_anova_ function uses type I Sum of Squares. So when the data is unbalanced, the order in which the predictors are included in the model matters. The first predictor explains most of the variation, the second explains the portion of variance left over from the first predictor etc. In the case of an unbalanced design, this amounts to comparing group means weighted by their individual sample sizes, which is something that the researcher is not usually interested in. For a fine discussion of these issues, see the [presentation by Zhan](http://md.psych.bio.uni-goettingen.de/mv/unit/lm_cat/InteractionsAndTypesOfSS.pdf). 
+
+In many cases, the resercher is interested in the unweighted means. That is, what is the effect after controlling for every other effect. Consequently, the rule of thumb is to 'always' use type III Sum of Squares. 
+
+Things to note with type III Sum of Squares
+--------------------------------------------------------
+
+Before calculating anovas using R, set the default contrasts to orthogonal, 
+if you want to obtain results that are comparable to those produced by SPSS. 
+
+Especially, if you want to use type III Sum of Squares like in SPSS by default, 
+you MUST use orthogonal contrasts! Otherwise your results may be wrong. 
+
+```{r}
+# for checking what the defaults contrasts are 
+options("contrasts")
+
+
+# For setting orthogonal contrasts, 
+# sum to zero for factors, polynomial for ordered.
+#
+# ALWAYS SET ORTHOGONAL CONTRASTS BEFORE USING TYPE III SUM OF SQUARES
+#
+options(contrasts = c("contr.sum", "contr.poly"))
+fm.ag <- lm(accuracy ~ age_grp * gender, game.wmc)
+Anova(fm.ag, type=3)
+
+# By default, R uses treatment contrast for factors. 
+# This DOES NOT WORK correctly with type III Sum of Squares. 
+#
+# DO NOT USE TREATMENT CONTRAST WITH TYPE III SUM OF SQUARES.  
+#
+options(contrasts = c("contr.treatment", "contr.poly")) 
+fm.ag <- lm(accuracy ~ age_grp * gender, game.wmc)
+Anova(fm.ag, type=3)
+
+```
+
+
+Do not use type III Sum of Squares blindly
+------------------------------------------------
+
+The obvious question is why there are multiple types of Sum of Squares. Consider the following 
+ANCOVA model, where we try to explain _accuracy_ by working memory capacity _pcu_score_ and _age_grp_.
+
+It is not a surprice that adults have a higher working memory capacity than children.
+```{r}
+boxplot(pcu_score ~ age_grp, game.wmc)
+```
+
+_pcu_score_ predicts _accuracy_, as does _age_grp_.
+
+```{r} 
+
+fm.wmc <- lm(accuracy ~ pcu_score, game.wmc) 
+summary(fm.wmc)
+anova(fm.wmc) # ok to use type I Sum of Squares, because we have only one predictor
+
+fm.age <- lm(accuracy ~ age_grp, game.wmc) 
+summary(fm.age)
+anova(fm.wmc)
+```
+
+But if we combine both, and use type III Sum of Squares, we get perplexing result
+```{r}
+options(contrasts = c("contr.sum", "contr.poly"))
+fm.axw <- lm(accuracy ~ pcu_score + age_grp, game.wmc) 
+summary(fm.axw)
+Anova(fm.axw, type=3)
+```
+Anova tells us that neither of the effects is significant. This is because with type III, each effect is evaluated after controlling for all the others. Because pcu_score and age_grp are very strongly correlated, there is no variation left to be explained. 
+
+In this case, you may not want to report the results of the previous F-tests. Instead, you may want to either compare the two alternative models and say that they are not significantly different. Or, you can use type I Sum of Squares to investigate is there any age related variation left after controlling for working memory capacity, for example.Note that we the data is still unbalanced, and therefore you are calculating unweighted means. 
+
+```{r}
+anova(fm.axw)
+```
+
+
+

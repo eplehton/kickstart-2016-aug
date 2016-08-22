@@ -1,0 +1,47 @@
+---
+title: "merge"
+author: "Esko & Markus"
+date: "22.08.2016"
+output: html_document
+---
+
+Merging two data frames 
+========================
+
+By going through this example, you will learn how to merge two data frames.
+
+Dataset
+----------------
+
+The first dataset is the game data described previously (see _comparing groups_).
+```{r}
+game <- read.table("kr_game.txt", header=T)
+```
+The second dataset contains data from a working memory test for the participants. It has the following variables:
+- player_id : the participant id
+- pcu_score : Percentage Unit Score of a separate counting span working memory test. The higher the score, the higher the working memory capacity
+
+```{r}
+wmc <- read.table("kr_wmc.txt", header=T)
+head(wmc)
+```
+
+
+Merging by player_id
+-------------------------------------------
+```{r}
+game.wmc <- merge(game, wmc, by="player_id")
+
+head(game.wmc)
+```
+
+That was easy. I have named the new data frame "game.wmc"", but any other name like gamewmc, would have been fine, also.
+
+```{r}
+write.table(game.wmc, "kr_gamewmc.txt", row.names=F)
+```
+
+More complex merges
+-------------------------------------------
+
+The above operation was an example of one-to-one merge: Both datasets contain a specific ID on one row only. More complex situations are, however, conceivable: sometimes it's necessary to perform a one-to-many merge or a many-to-many merge. Compared to, say, SPSS, it's super-easy to perform these more complex operations in R. Come talk with us if you need to do this with your data. 

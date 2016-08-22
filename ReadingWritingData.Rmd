@@ -1,0 +1,108 @@
+---
+title: "Reading and writing data"
+output: html_document
+---
+
+
+This is partly based an excellent tutorial [R for SAS and SPSS users](https://science.nature.nps.gov/im/datamgmt/statistics/r/documents/r_for_sas_spss_users.pdf)
+
+
+Let's start with a simple example...
+
+We have a dataset in a text file. The variables are separated with tabs (empty space). Variables names are on the first row. 
+
+```{r}
+
+apgar <- read.table("apgar.txt")
+head(apgar) # we used to preview only the start or head of the data frame
+
+```
+That was not complicated! However, there are a couple things you need to pay attention to. 
+
+*Working directory*
+
+The filenames is resolved relative to the current working directory of your R console. If the file is in the working directory it can be found with the filename. If not, you either need to copy the file to your working directory or give also the path to the file. 
+
+But what is your working directory. You get to know it with a command. 
+
+```{r}
+getwd()
+
+```
+
+When you first start Rstudio, it is good idea to change the working directory to the directory where the scripts and data of your current project are. The easiest way is to you the Files-browser in Rstudio, go to the right directory, and the click More >> Set As Working Directory. H
+
+You can also set the working directory with a command:
+
+```{r}
+setwd("~/github/kickstartr/2016aug")  # write the right path 
+
+```
+
+*Separator used* 
+
+By deafult, read.table uses any whitespace character to separate different variables on rows. Often the separator is something else, like comma. In apgar.csv the same data is in CSV format (CSV = comma separated values), and the simple call to read.table fails. Try this and look at the data, because it very useful know how how does the data frame look like when the separator is wrong. Sooner or later you will encounter this kind of problem in your data analysis. 
+
+```{r}
+apgar <- read.table("apgar.csv")
+
+```
+
+The problem is easily corrected by specifying the separator sep=','. However, in order to get the variable names correct, give header=TRUE also.
+```{r}
+apgar <- read.table("apgar.csv", sep=",")
+head(apgar)
+
+apgar <- read.table("apgar.csv", sep=",", header=TRUE)
+head(apgar)
+```
+
+Alternatively, you can use function read.delim, read.csv etc. They are just shortcuts to read.table with slightly different default values for the parameters like separator. 
+
+*Decimals are marked with comma, not with point*
+
+In Finnish, the convention is to use decimal comma, not point. By default SPSS, Excel etc. detect the locale settings of the operating systems and adapt their notation accordingy. This creates sometimes problems with other data analysis software, which often follow the English convention and use decimal comma. 
+
+
+```{r}
+# Separator is here ;
+apgar <- read.table("apgar_decimalcomma.txt", sep=";")
+head(apgar)
+```
+
+At first, everything seems to be fine, before you try to use some of the decimal values. 
+
+```{r}
+apgar$lgincome * 2
+```
+
+This can solved by specifying the decimal point character. 
+```{r}
+apgar <- read.table("apgar_decimalcomma.txt", dec=",", sep=";")
+head(apgar)
+```
+
+
+Reading SPSS files
+------------------------
+R can read for example SPSS-files directly, using package foreing
+
+```{r}
+library(foreign)
+apgar <- read.spss("apgar.sav",to.data.frame=TRUE)
+
+View(apgar)
+```
+
+
+Writing data
+=================================
+All the above presented text data files were actually created from the aforementioned apgar.sav file. The following functions calls were used. 
+
+```{r}
+write.table(apgar, "apgar.txt", sep="\t")
+write.csv(apgar, "apgar.csv") # by default separated with comma
+write.table(apgar, "apgar_decimalcomma.txt", sep=";", dec=',')
+
+```
+
