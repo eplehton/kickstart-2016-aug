@@ -61,279 +61,78 @@ img {
 
 <div id="header">
 <h1 class="title">Representing data and making simple calculations</h1>
+<h4 class="date"><em>24.08.2016</em></h4>
 </div>
 
 
-<p>Objects are way to represent data in a programming language like R. For different kinds of data, the computer needs different kind of objects.</p>
-<div id="vectors" class="section level1">
-<h1>Vectors</h1>
-<p>In R, the basic object is vector. It is an ordered set of data containing one or more elements.</p>
+<p>Computers are stupid. If we want to get them to make data analysis work for us, we need to tell them exactly 1) what is the data they are supposed to use, 2) what are the tools to calculate new values from the existing values, and 3) at which order these calculations are performed on which data.</p>
+<p><em>Objects</em> are the way to represent data in a programming language like R so that a computer can use it.</p>
+<p><em>Operators</em> are tools to calculate new values from existing values.</p>
+<p><em>Scripts</em> define algorithms, that is, instructions for using the right objects and operators at the right time.</p>
+<div id="objects" class="section level1">
+<h1>Objects</h1>
+<p>For getting started with R, you need to know grasp the idea of two kinds of objects: <em>vectors</em> and <em>data frames</em>.</p>
+<div id="vector" class="section level2">
+<h2>Vector</h2>
+<p><em>Vector</em> is an ordered collection of data, like numbers or strings.</p>
 <p>When you enter text to the R console, the interpreted will parse your input, and create a vector. The vectors “know” what kind of data they have in them.</p>
-<p><a href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Vector-objects">R lang defitions: Vectors</a></p>
-<pre class="r"><code># creates a vector, which contains only one number
-3    </code></pre>
-<pre><code>## [1] 3</code></pre>
-<pre class="r"><code># creates a vector with three members
+<p>Try to run to enter the input below to R console.</p>
+<pre class="r"><code># creates a vector, which contains only one number, and then prints the contents of that vector
+3    
+
+# creates a vector with three numbers, and then prints the contents of that vector
 c(7, 6, 3)</code></pre>
-<pre><code>## [1] 7 6 3</code></pre>
+<p>Vectors have length and type</p>
 <pre class="r"><code># the vectors have type
-class(3)</code></pre>
-<pre><code>## [1] &quot;numeric&quot;</code></pre>
-<pre class="r"><code>class(c(7, 6, 3))</code></pre>
-<pre><code>## [1] &quot;numeric&quot;</code></pre>
-<pre class="r"><code># and length
-length(3)</code></pre>
-<pre><code>## [1] 1</code></pre>
-<pre class="r"><code>length(c(7, 6, 3))</code></pre>
-<pre><code>## [1] 3</code></pre>
+class(3)
+class(c(7, 6, 3))
+
+# and length
+length(3)
+length(c(7, 6, 3))</code></pre>
+<p>Vector may contain also strings, not only numbers</p>
 <pre class="r"><code># creates object of type character
-&quot;Vector&quot;</code></pre>
-<pre><code>## [1] &quot;Vector&quot;</code></pre>
-<pre class="r"><code>c(&quot;Vector&quot;, &quot;says&quot;, &quot;hello!&quot;)</code></pre>
-<pre><code>## [1] &quot;Vector&quot; &quot;says&quot;   &quot;hello!&quot;</code></pre>
-<pre class="r"><code># beside the type, everything is same as with numbers
-class(&quot;Vector&quot;)</code></pre>
-<pre><code>## [1] &quot;character&quot;</code></pre>
-<pre class="r"><code>class(c(&quot;Vector&quot;, &quot;says&quot;, &quot;hello!&quot;))</code></pre>
-<pre><code>## [1] &quot;character&quot;</code></pre>
-<pre class="r"><code>length(&quot;Vector&quot;)</code></pre>
-<pre><code>## [1] 1</code></pre>
-<pre class="r"><code>length(c(&quot;Vector&quot;, &quot;says&quot;, &quot;hello!&quot;))</code></pre>
-<pre><code>## [1] 3</code></pre>
+&quot;Vector&quot;
+c(&quot;Vector&quot;, &quot;says&quot;, &quot;hello!&quot;)
+
+# beside the type, everything is same as with numbers
+class(&quot;Vector&quot;)
+class(c(&quot;Vector&quot;, &quot;says&quot;, &quot;hello!&quot;))
+
+length(&quot;Vector&quot;)
+length(c(&quot;Vector&quot;, &quot;says&quot;, &quot;hello!&quot;))</code></pre>
+<p><a href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Vector-objects">R lang defitions: Vectors</a></p>
 </div>
-<div id="variables" class="section level1">
-<h1>Variables</h1>
-<p>The power of programming language is on the possibility to describe the algorithm (= what will be computed) regardless of the actual data. For this we need variables, which can represent the actual objects in the algorithm.</p>
-<pre class="r"><code>salaryBeforeTaxes &lt;- 2734.51
-employerCosts &lt;- salaryBeforeTaxes * 1.56 
-print(employerCosts)</code></pre>
-<pre><code>## [1] 4265.836</code></pre>
-<p>Here the R console first creates a vector of type numbers with one member (2734.51). Then it is assigned to the variable salaryBeforeTaxes with operator &lt;-. You can thing a variable a box where you can but data.</p>
+<div id="variables" class="section level2">
+<h2>Variables</h2>
+<p>In the above example, we created vectors on the fly. However, typically we want to create some data (or read it from a file) and then store it to a variable for later use.</p>
+<pre class="r"><code>foo &lt;- c(2, 4, 6, 8)
+bar &lt;- &quot;Hei hoi!&quot;</code></pre>
+</div>
 </div>
 <div id="operators" class="section level1">
 <h1>Operators</h1>
-<p>Objects represent data and variables can represent them in algorithms. In the previous example, we used multiplication which was represented as <em>. </em> is an operator. When an operator encounters objects (or variables which can represent them), new objects are created.</p>
+<p>Objects represent data and variables can represent them in algorithms.</p>
+<p>With operators new objects are created from existing objects.</p>
 <p>However, at first there is nothing that exciting if you remember anything about elementary school mathematics.</p>
-<p><a href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Operators">R lang definition: Operators</a></p>
 <pre class="r"><code># Let's create objects and assign them to variables.
 a &lt;- 4
 b &lt;- 6
 c &lt;- -3
 
-a + b</code></pre>
-<pre><code>## [1] 10</code></pre>
-<pre class="r"><code>a - b</code></pre>
-<pre><code>## [1] -2</code></pre>
-<pre class="r"><code>a * b</code></pre>
-<pre><code>## [1] 24</code></pre>
-<pre class="r"><code>a / b</code></pre>
-<pre><code>## [1] 0.6666667</code></pre>
-<pre class="r"><code># NB. Order or calculation follows the ordinary mathematical rules
-a + b * c    </code></pre>
-<pre><code>## [1] -14</code></pre>
-<pre class="r"><code>(a + b) * c  </code></pre>
-<pre><code>## [1] -30</code></pre>
-<pre class="r"><code>a + (b * c) </code></pre>
-<pre><code>## [1] -14</code></pre>
-<p>These we are vectors which were of length 1. Everything happens pretty much the same way for vectors which are longer. Everything operator is applied element-wise.</p>
-<pre class="r"><code>thesisWorker &lt;- 0
-researchAssistant &lt;- 1700
-doctoralStudent &lt;- 2200
-postdoc &lt;- 3200
-professor &lt;- 5500
-rector &lt;- 25000
+a + b
+a - b
+a * b
+a / b
 
-salaryBeforeTaxes &lt;- c(thesisWorker, 
-                       researchAssistant,
-                       doctoralStudent,
-                       postdoc,
-                       professor,
-                       rector)
-
-employerCosts &lt;- salaryBeforeTaxes * 1.56 
-employerCosts</code></pre>
-<pre><code>## [1]     0  2652  3432  4992  8580 39000</code></pre>
-<p>Variables are a way to describe algorithms irrespective of data. Vectors are a very powerful way to calculate the same thing for multiple values at once.</p>
-</div>
-<div id="data-frames" class="section level1">
-<h1>Data frames</h1>
-<p>Most of the time researchers in behavioural sciences are working with data which are nicely arranged to two dimensional datasets. On the rows, there are observations and on columns there are different variables which describe different aspects of these observations. In R, these are called as data frame objects or just data frames.</p>
-<p>Data frames can be constructed by stacking vectors beside each other or on top of each other</p>
-<pre class="r"><code>position &lt;- c(&quot;Thesis worker&quot;, 
-               &quot;Research assistant&quot;,
-               &quot;Doctoral student&quot;,
-               &quot;Postdoc&quot;, 
-               &quot;Professos&quot;, 
-               &quot;Rector&quot;)
-salaryBeforeTaxes &lt;- c(thesisWorker, 
-                       researchAssistant,
-                       doctoralStudent,
-                       postdoc,
-                       professor,
-                       rector)
-workingYears &lt;- c(0, 1, 3, 8, 20, 30)
-citations &lt;- c(0, 
-               1,
-               8,
-               30,
-               7784,
-               2021)
-academics &lt;- data.frame(position, salaryBeforeTaxes, citations, workingYears)</code></pre>
-<p>We can view this nice data frame either printing it to the console or using View.</p>
-<pre class="r"><code>academics</code></pre>
-<pre><code>##             position salaryBeforeTaxes citations workingYears
-## 1      Thesis worker                 0         0            0
-## 2 Research assistant              1700         1            1
-## 3   Doctoral student              2200         8            3
-## 4            Postdoc              3200        30            8
-## 5          Professos              5500      7784           20
-## 6             Rector             25000      2021           30</code></pre>
-<pre class="r"><code>View(academics)</code></pre>
-<div id="dots-.-in-the-variable-or-function-names" class="section level2">
-<h2>Dots . in the variable or function names</h2>
-<p>In the previous example, we saved the data frame with a variable name which had an ending “.df”. It is good to notice that there is nothing magical here. It is just a part of the variable name, and we could have used any other valid variables name. Unlike to many other programming languages like Python, Java or MATLAB, dot (.) is not used for accessing object/struct members. R uses $-symbol for that purpose.</p>
-</div>
-<div id="accessing-the-data-in-data-frames" class="section level2">
-<h2>Accessing the data in data frames</h2>
-<p>Vectors (or variables) within data frames can be easily accessed and used with $.</p>
-<pre class="r"><code>academics$salaryBeforeTaxes</code></pre>
-<pre><code>## [1]     0  1700  2200  3200  5500 25000</code></pre>
-<p>Using function names, it is also possible to get all the variables names as a vector.</p>
-<pre class="r"><code># get the names as a vector
-names(academics)  </code></pre>
-<pre><code>## [1] &quot;position&quot;          &quot;salaryBeforeTaxes&quot; &quot;citations&quot;        
-## [4] &quot;workingYears&quot;</code></pre>
-<p>This can be also used to change them.</p>
-<pre class="r"><code># set the names from a vector
-academics.cryptic &lt;- academics # make a copy of the data frame first
-
-names(academics.cryptic)</code></pre>
-<pre><code>## [1] &quot;position&quot;          &quot;salaryBeforeTaxes&quot; &quot;citations&quot;        
-## [4] &quot;workingYears&quot;</code></pre>
-<pre class="r"><code># Use short cryptic variable names and you will be viewed as
-# - super-intelligent bt all non-programmers 
-# - super-stupid by all who know how to program
-names(academics.cryptic) &lt;- c(&quot;pos&quot;, &quot;slr&quot;, &quot;cit&quot;, &quot;wyr&quot;)   
-# Remember that your scripts are the best (and typically only) documentation
-# for your data-analysis. Make them readable and accessible! 
-names(academics.cryptic)</code></pre>
-<pre><code>## [1] &quot;pos&quot; &quot;slr&quot; &quot;cit&quot; &quot;wyr&quot;</code></pre>
-<p>Because they were first creates as vectors, they behave like vectors also when they are part of a data frame.</p>
-<pre class="r"><code>academics$salaryBeforeTaxes * 1.56</code></pre>
-<pre><code>## [1]     0  2652  3432  4992  8580 39000</code></pre>
-</div>
-<div id="creating-new-variables-to-data-frames" class="section level2">
-<h2>Creating new variables to data frames</h2>
-<p>Often we need to calculate something from the existing variables in the data frame and then include them to the data frame.</p>
-<pre class="r"><code>academics$costs &lt;- academics$salaryBeforeTaxes * 1.56
-
-academics$citationsPerYear &lt;- academics$citations / academics$workingYears
-
-academics</code></pre>
-<pre><code>##             position salaryBeforeTaxes citations workingYears costs
-## 1      Thesis worker                 0         0            0     0
-## 2 Research assistant              1700         1            1  2652
-## 3   Doctoral student              2200         8            3  3432
-## 4            Postdoc              3200        30            8  4992
-## 5          Professos              5500      7784           20  8580
-## 6             Rector             25000      2021           30 39000
-##   citationsPerYear
-## 1              NaN
-## 2         1.000000
-## 3         2.666667
-## 4         3.750000
-## 5       389.200000
-## 6        67.366667</code></pre>
-<pre class="r"><code>academics$citatonsPerCitations &lt;- academics$citations / academics$citations
-academics</code></pre>
-<pre><code>##             position salaryBeforeTaxes citations workingYears costs
-## 1      Thesis worker                 0         0            0     0
-## 2 Research assistant              1700         1            1  2652
-## 3   Doctoral student              2200         8            3  3432
-## 4            Postdoc              3200        30            8  4992
-## 5          Professos              5500      7784           20  8580
-## 6             Rector             25000      2021           30 39000
-##   citationsPerYear citatonsPerCitations
-## 1              NaN                  NaN
-## 2         1.000000                    1
-## 3         2.666667                    1
-## 4         3.750000                    1
-## 5       389.200000                    1
-## 6        67.366667                    1</code></pre>
-<pre class="r"><code># If we made a mistake in creating the new variable, we can &quot;cancel&quot; creating it. 
-academics$citationsPerCitations &lt;- NULL
-
-# The command assigned &quot;emptiness&quot; as the value of the variable, and see, it is gone!
-academics</code></pre>
-<pre><code>##             position salaryBeforeTaxes citations workingYears costs
-## 1      Thesis worker                 0         0            0     0
-## 2 Research assistant              1700         1            1  2652
-## 3   Doctoral student              2200         8            3  3432
-## 4            Postdoc              3200        30            8  4992
-## 5          Professos              5500      7784           20  8580
-## 6             Rector             25000      2021           30 39000
-##   citationsPerYear citatonsPerCitations
-## 1              NaN                  NaN
-## 2         1.000000                    1
-## 3         2.666667                    1
-## 4         3.750000                    1
-## 5       389.200000                    1
-## 6        67.366667                    1</code></pre>
-<p>There are also other ways for that</p>
-<pre class="r"><code>academics$citationsPerYear &lt;- NULL
-
-academics &lt;- transform(academics,
-          citationsPerYear = citations / workingYears)
-academics</code></pre>
-<pre><code>##             position salaryBeforeTaxes citations workingYears costs
-## 1      Thesis worker                 0         0            0     0
-## 2 Research assistant              1700         1            1  2652
-## 3   Doctoral student              2200         8            3  3432
-## 4            Postdoc              3200        30            8  4992
-## 5          Professos              5500      7784           20  8580
-## 6             Rector             25000      2021           30 39000
-##   citatonsPerCitations citationsPerYear
-## 1                  NaN              NaN
-## 2                    1         1.000000
-## 3                    1         2.666667
-## 4                    1         3.750000
-## 5                    1       389.200000
-## 6                    1        67.366667</code></pre>
-</div>
-<div id="creating-values-conditionally" class="section level2">
-<h2>Creating values conditionally</h2>
-<p>Sometimes it’s necessary to create new variables conditionally, conditioned on the values of other variables</p>
-<p>For instance, we could be interested to calculate a new variables which describes weather a person has citations or not:</p>
-<pre class="r"><code>academics$hasCitations &lt;- ifelse(academics$citations &gt; 0, 1 ,0)
-academics</code></pre>
-<pre><code>##             position salaryBeforeTaxes citations workingYears costs
-## 1      Thesis worker                 0         0            0     0
-## 2 Research assistant              1700         1            1  2652
-## 3   Doctoral student              2200         8            3  3432
-## 4            Postdoc              3200        30            8  4992
-## 5          Professos              5500      7784           20  8580
-## 6             Rector             25000      2021           30 39000
-##   citatonsPerCitations citationsPerYear hasCitations
-## 1                  NaN              NaN            0
-## 2                    1         1.000000            1
-## 3                    1         2.666667            1
-## 4                    1         3.750000            1
-## 5                    1       389.200000            1
-## 6                    1        67.366667            1</code></pre>
-</div>
-<div id="attach-and-detach" class="section level2">
-<h2>Attach and detach</h2>
-<p>Notation can be simplified by giving a certain data frame a privileged status using attach:</p>
-<pre class="r"><code>academics$citationsPerYear &lt;- NULL # remove it so that it is newly created
-
-attach(academics)</code></pre>
-<pre><code>## The following objects are masked _by_ .GlobalEnv:
-## 
-##     citations, position, salaryBeforeTaxes, workingYears</code></pre>
-<pre class="r"><code>citationsPerYear &lt;- citations / workingYears
-
-detach(academics)</code></pre>
-</div>
+# NB. Order or calculation follows the ordinary mathematical rules
+a + b * c    
+(a + b) * c  
+a + (b * c) </code></pre>
+<p>These we are vectors which had a length of 1. Everything happens pretty much the same way for vectors which are longer. Every operator is applied for every element, separately. It is said the operator is applied element-wise.</p>
+<pre class="r"><code>many_numbers &lt;- c(1, 2, 3, 4, 5)
+many_numbers * 2</code></pre>
+<pre><code>## [1]  2  4  6  8 10</code></pre>
 <div id="comparative-operators" class="section level2">
 <h2>Comparative operators</h2>
 <p>In the above, we used comparator operator &gt;. They can be used to compare things, and the results will be either TRUE or FALSE.</p>
@@ -352,111 +151,227 @@ detach(academics)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code>!(5 == 2)  # ! alone is negation</code></pre>
 <pre><code>## [1] TRUE</code></pre>
-<p>Calculating something based on non-missing values: a bit advanced stuff =&gt; reorganize</p>
-<pre class="r"><code>#rowMeans(mydata[,paste(&quot;q&quot;,1:4,sep=&quot;&quot;)],na.rm=TRUE)
+<p>We can use a variables also in creation of new vectors.</p>
+<pre class="r"><code>thesisWorker &lt;- 0
+researchAssistant &lt;- 1700
+doctoralStudent &lt;- 2200
+postdoc &lt;- 3200
+professor &lt;- 5500
+rector &lt;- 25000
 
-#mydata$mean.missing &lt;- rowMeans(mydata[,paste(&quot;q&quot;,1:4,sep=&quot;&quot;)],na.rm=TRUE)
-#mydata</code></pre>
+salaryBeforeTaxes &lt;- c(thesisWorker, 
+                       researchAssistant,
+                       doctoralStudent,
+                       postdoc,
+                       professor,
+                       rector)
+
+employerCosts &lt;- salaryBeforeTaxes * 1.56 
+employerCosts</code></pre>
+<pre><code>## [1]     0  2652  3432  4992  8580 39000</code></pre>
 </div>
 </div>
-<div id="matrices" class="section level1">
-<h1>Matrices</h1>
-<p>Data frames are 2 x 2 tables, variables always on columns and cases on rows. It is good to know, that there is also another way to represent tabular data using matrices. Matrices are R’s equivalent to matrices in linear algebra, and they “know” how to become in matrix like fashion with some of the operators.</p>
-<pre class="r"><code># First beside one another
-# Let's create a couple of vectors
+<div id="scripts-or-algorithms" class="section level1">
+<h1>Scripts or algorithms</h1>
+<p>The power of any programming language is on the possibility to describe the algorithm (= what will be computed) regardless of the actual data. For this we need variables, which can represent the actual objects in the algorithm consisting of steps where operators are used to calculate new values from existing values.</p>
+<pre class="r"><code>salaryBeforeTaxes &lt;- 2734.51
 
-kek &lt;- seq(1,20,2)
-kek</code></pre>
-<pre><code>##  [1]  1  3  5  7  9 11 13 15 17 19</code></pre>
-<pre class="r"><code>kone &lt;- runif(n = 10,min = 1,max=30)
-kone</code></pre>
-<pre><code>##  [1] 17.598896  9.989673  2.191132 26.667126  1.992005 13.852240 20.132977
-##  [8] 15.746016 13.079416 17.256958</code></pre>
-<pre class="r"><code>#kone is a vector of random uniformly distributed continuous values, picked from the range [1...30]
+employerCosts &lt;- salaryBeforeTaxes * 1.56 
 
-kekkone &lt;- cbind(kek,kone)
-kekkone</code></pre>
-<pre><code>##       kek      kone
-##  [1,]   1 17.598896
-##  [2,]   3  9.989673
-##  [3,]   5  2.191132
-##  [4,]   7 26.667126
-##  [5,]   9  1.992005
-##  [6,]  11 13.852240
-##  [7,]  13 20.132977
-##  [8,]  15 15.746016
-##  [9,]  17 13.079416
-## [10,]  19 17.256958</code></pre>
-<pre class="r"><code>#cbind is a short for &quot;bind columns together&quot;, and that's what was done
+print(employerCosts)</code></pre>
+<pre><code>## [1] 4265.836</code></pre>
+<p>Here the R console first creates a vector of type numbers with one member (2734.51). Then it is assigned to the variable salaryBeforeTaxes with operator &lt;-. You can thing a variable a box where you can but data.</p>
+</div>
+<div id="more-objects-data-frames" class="section level1">
+<h1>More objects: Data frames</h1>
+<p>Data frame can be tought as a collection of vectors, so that the vectors form a two-dimensional table.</p>
+<p>Two-dimensional table it the most common way to represent data, at least in behavioural sciences. On the rows, there are observations and on the columns, there are different variables which describe different aspects of these observations.</p>
+<p>Data frames can be constructed by first creating some vectors (of the same length), and then combining them with function <em>data.frame</em>.</p>
+<pre class="r"><code># create vectors
+position &lt;- c(&quot;Thesis worker&quot;, 
+               &quot;Research assistant&quot;,
+               &quot;Doctoral student&quot;,
+               &quot;Postdoc&quot;, 
+               &quot;Professor&quot;, 
+               &quot;Rector&quot;)
+salaryBeforeTaxes &lt;- c(thesisWorker, 
+                       researchAssistant,
+                       doctoralStudent,
+                       postdoc,
+                       professor,
+                       rector)
+workingYears &lt;- c(0, 1, 3, 8, 20, 30)
+citations &lt;- c(0, 
+               1,
+               8,
+               30,
+               7784,
+               2021)
 
-class(kekkone)</code></pre>
-<pre><code>## [1] &quot;matrix&quot;</code></pre>
-<pre class="r"><code>names(kekkone)</code></pre>
-<pre><code>## NULL</code></pre>
-<p>We have created a matrix. Notice names does not give a vector of variable names. Matrix can usually be transformed into a data frame by saying:</p>
-<pre class="r"><code>kekkone.df &lt;- as.data.frame(kekkone)
+# create a data frame
+academics &lt;- data.frame(position, salaryBeforeTaxes, citations, workingYears)</code></pre>
+<p>We can view this nice data frame either printing it to the console or using View.</p>
+<pre class="r"><code>academics # print all</code></pre>
+<pre><code>##             position salaryBeforeTaxes citations workingYears
+## 1      Thesis worker                 0         0            0
+## 2 Research assistant              1700         1            1
+## 3   Doctoral student              2200         8            3
+## 4            Postdoc              3200        30            8
+## 5          Professor              5500      7784           20
+## 6             Rector             25000      2021           30</code></pre>
+<pre class="r"><code>View(academics) # view in a separate tab/window
+head(academics) # print only the first rows</code></pre>
+<pre><code>##             position salaryBeforeTaxes citations workingYears
+## 1      Thesis worker                 0         0            0
+## 2 Research assistant              1700         1            1
+## 3   Doctoral student              2200         8            3
+## 4            Postdoc              3200        30            8
+## 5          Professor              5500      7784           20
+## 6             Rector             25000      2021           30</code></pre>
+<div id="accessing-the-data-in-data-frames" class="section level2">
+<h2>Accessing the data in data frames</h2>
+<p>Vectors (variables) within data frames can be easily accessed and used with $.</p>
+<pre class="r"><code>academics$salaryBeforeTaxes</code></pre>
+<pre><code>## [1]     0  1700  2200  3200  5500 25000</code></pre>
+<p>Using function names, it is also possible to get all the variables names as a vector.</p>
+<pre class="r"><code># get the names as a vector
+names(academics)  </code></pre>
+<pre><code>## [1] &quot;position&quot;          &quot;salaryBeforeTaxes&quot; &quot;citations&quot;        
+## [4] &quot;workingYears&quot;</code></pre>
+<p>This can be also used to change them.</p>
+<pre class="r"><code># set the names from a vector
+academics.cryptic &lt;- academics # make a copy of the data frame first
 
-kekkone.df</code></pre>
-<pre><code>##    kek      kone
-## 1    1 17.598896
-## 2    3  9.989673
-## 3    5  2.191132
-## 4    7 26.667126
-## 5    9  1.992005
-## 6   11 13.852240
-## 7   13 20.132977
-## 8   15 15.746016
-## 9   17 13.079416
-## 10  19 17.256958</code></pre>
-<p>```</p>
-<p>If the values in the vectors were the values of ten different values, we could say:</p>
-<pre class="r"><code>konekek &lt;- rbind(kek,kone)
-konekek</code></pre>
-<pre><code>##         [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]
-## kek   1.0000 3.000000 5.000000  7.00000 9.000000 11.00000 13.00000
-## kone 17.5989 9.989673 2.191132 26.66713 1.992005 13.85224 20.13298
-##          [,8]     [,9]    [,10]
-## kek  15.00000 17.00000 19.00000
-## kone 15.74602 13.07942 17.25696</code></pre>
-<pre class="r"><code># rbind is short for &quot;bind rows together&quot;, or stack them on top of one another
+names(academics.cryptic)</code></pre>
+<pre><code>## [1] &quot;position&quot;          &quot;salaryBeforeTaxes&quot; &quot;citations&quot;        
+## [4] &quot;workingYears&quot;</code></pre>
+<pre class="r"><code># Use short cryptic variable names and you will be viewed as
+# - super-intelligent by all non-programmers 
+# - super-stupid by all who know how to program
+names(academics.cryptic) &lt;- c(&quot;pos&quot;, &quot;slr&quot;, &quot;cit&quot;, &quot;wyr&quot;)   
+# Remember that your scripts are the best (and typically only) documentation
+# for your data-analysis. Make them readable and accessible! 
+names(academics.cryptic)</code></pre>
+<pre><code>## [1] &quot;pos&quot; &quot;slr&quot; &quot;cit&quot; &quot;wyr&quot;</code></pre>
+<p>Because they were first creates as vectors, they behave like vectors also when they are part of a data frame.</p>
+<pre class="r"><code>academics$salaryBeforeTaxes * 1.56</code></pre>
+<pre><code>## [1]     0  2652  3432  4992  8580 39000</code></pre>
+</div>
+<div id="extra-stuff-attach-and-detach" class="section level2">
+<h2>Extra stuff: Attach and detach</h2>
+<p>Notation can be simplified by giving a certain data frame a privileged status using attach:</p>
+<pre class="r"><code>academics$citationsPerYear &lt;- NULL # remove it so that it is newly created
 
-konekek.df &lt;- as.data.frame(konekek)
-konekek.df</code></pre>
-<pre><code>##           V1       V2       V3       V4       V5       V6       V7
-## kek   1.0000 3.000000 5.000000  7.00000 9.000000 11.00000 13.00000
-## kone 17.5989 9.989673 2.191132 26.66713 1.992005 13.85224 20.13298
-##            V8       V9      V10
-## kek  15.00000 17.00000 19.00000
-## kone 15.74602 13.07942 17.25696</code></pre>
-<pre class="r"><code>names(konekek.df) &lt;- c(&quot;Openness&quot;, &quot;Conscientciousness&quot;, &quot;Extroversion&quot;,&quot;Agreeableness&quot;,
-                       &quot;Neuroticism&quot;, paste(&quot;X&quot;,1:5,sep=&quot;&quot;))
-names(konekek.df)</code></pre>
-<pre><code>##  [1] &quot;Openness&quot;           &quot;Conscientciousness&quot; &quot;Extroversion&quot;      
-##  [4] &quot;Agreeableness&quot;      &quot;Neuroticism&quot;        &quot;X1&quot;                
-##  [7] &quot;X2&quot;                 &quot;X3&quot;                 &quot;X4&quot;                
-## [10] &quot;X5&quot;</code></pre>
-<pre class="r"><code>konekek.df</code></pre>
-<pre><code>##      Openness Conscientciousness Extroversion Agreeableness Neuroticism
-## kek    1.0000           3.000000     5.000000       7.00000    9.000000
-## kone  17.5989           9.989673     2.191132      26.66713    1.992005
-##            X1       X2       X3       X4       X5
-## kek  11.00000 13.00000 15.00000 17.00000 19.00000
-## kone 13.85224 20.13298 15.74602 13.07942 17.25696</code></pre>
-<pre class="r"><code># Vectors can be combined by c (short for combine)
-longvector &lt;- c(kek,kone)</code></pre>
-<p>Data frame can be easily converted to 2 x 2 matrix.</p>
-<pre class="r"><code>as.matrix(kekkone.df)</code></pre>
-<pre><code>##       kek      kone
-##  [1,]   1 17.598896
-##  [2,]   3  9.989673
-##  [3,]   5  2.191132
-##  [4,]   7 26.667126
-##  [5,]   9  1.992005
-##  [6,]  11 13.852240
-##  [7,]  13 20.132977
-##  [8,]  15 15.746016
-##  [9,]  17 13.079416
-## [10,]  19 17.256958</code></pre>
+attach(academics)</code></pre>
+<pre><code>## The following objects are masked _by_ .GlobalEnv:
+## 
+##     citations, position, salaryBeforeTaxes, workingYears</code></pre>
+<pre class="r"><code>citationsPerYear &lt;- citations / workingYears
+
+detach(academics)</code></pre>
+</div>
+<div id="creating-new-variables-to-data-frames" class="section level2">
+<h2>Creating new variables to data frames</h2>
+<p>Often we need to calculate something from the existing variables in the data frame and then include them to the data frame.</p>
+<pre class="r"><code>academics$costs &lt;- academics$salaryBeforeTaxes * 1.56
+
+academics$citationsPerYear &lt;- academics$citations / academics$workingYears
+
+academics</code></pre>
+<pre><code>##             position salaryBeforeTaxes citations workingYears costs
+## 1      Thesis worker                 0         0            0     0
+## 2 Research assistant              1700         1            1  2652
+## 3   Doctoral student              2200         8            3  3432
+## 4            Postdoc              3200        30            8  4992
+## 5          Professor              5500      7784           20  8580
+## 6             Rector             25000      2021           30 39000
+##   citationsPerYear
+## 1              NaN
+## 2         1.000000
+## 3         2.666667
+## 4         3.750000
+## 5       389.200000
+## 6        67.366667</code></pre>
+<pre class="r"><code>academics$citatonsPerCitations &lt;- academics$citations / academics$citations
+academics</code></pre>
+<pre><code>##             position salaryBeforeTaxes citations workingYears costs
+## 1      Thesis worker                 0         0            0     0
+## 2 Research assistant              1700         1            1  2652
+## 3   Doctoral student              2200         8            3  3432
+## 4            Postdoc              3200        30            8  4992
+## 5          Professor              5500      7784           20  8580
+## 6             Rector             25000      2021           30 39000
+##   citationsPerYear citatonsPerCitations
+## 1              NaN                  NaN
+## 2         1.000000                    1
+## 3         2.666667                    1
+## 4         3.750000                    1
+## 5       389.200000                    1
+## 6        67.366667                    1</code></pre>
+<pre class="r"><code># If we made a mistake in creating the new variable, we can &quot;cancel&quot; creating it. 
+academics$citationsPerCitations &lt;- NULL
+
+# The command assigned &quot;emptiness&quot; as the value of the variable, and see, it is gone!
+academics</code></pre>
+<pre><code>##             position salaryBeforeTaxes citations workingYears costs
+## 1      Thesis worker                 0         0            0     0
+## 2 Research assistant              1700         1            1  2652
+## 3   Doctoral student              2200         8            3  3432
+## 4            Postdoc              3200        30            8  4992
+## 5          Professor              5500      7784           20  8580
+## 6             Rector             25000      2021           30 39000
+##   citationsPerYear citatonsPerCitations
+## 1              NaN                  NaN
+## 2         1.000000                    1
+## 3         2.666667                    1
+## 4         3.750000                    1
+## 5       389.200000                    1
+## 6        67.366667                    1</code></pre>
+</div>
+<div id="extra-stuff-other-way-to-create-new-variables" class="section level2">
+<h2>Extra stuff: Other way to create new variables</h2>
+<p>There are also other ways for that</p>
+<pre class="r"><code>academics$citationsPerYear &lt;- NULL
+
+academics &lt;- transform(academics,
+          citationsPerYear = citations / workingYears)
+academics</code></pre>
+<pre><code>##             position salaryBeforeTaxes citations workingYears costs
+## 1      Thesis worker                 0         0            0     0
+## 2 Research assistant              1700         1            1  2652
+## 3   Doctoral student              2200         8            3  3432
+## 4            Postdoc              3200        30            8  4992
+## 5          Professor              5500      7784           20  8580
+## 6             Rector             25000      2021           30 39000
+##   citatonsPerCitations citationsPerYear
+## 1                  NaN              NaN
+## 2                    1         1.000000
+## 3                    1         2.666667
+## 4                    1         3.750000
+## 5                    1       389.200000
+## 6                    1        67.366667</code></pre>
+</div>
+<div id="extra-stuff-creating-values-conditionally" class="section level2">
+<h2>Extra stuff: Creating values conditionally</h2>
+<p>Sometimes it’s necessary to create new variables conditionally, conditioned on the values of other variables</p>
+<p>For instance, we could be interested to calculate a new variables which describes weather a person has citations or not:</p>
+<pre class="r"><code>academics$hasCitations &lt;- ifelse(academics$citations &gt; 0, 1 ,0)
+academics</code></pre>
+<pre><code>##             position salaryBeforeTaxes citations workingYears costs
+## 1      Thesis worker                 0         0            0     0
+## 2 Research assistant              1700         1            1  2652
+## 3   Doctoral student              2200         8            3  3432
+## 4            Postdoc              3200        30            8  4992
+## 5          Professor              5500      7784           20  8580
+## 6             Rector             25000      2021           30 39000
+##   citatonsPerCitations citationsPerYear hasCitations
+## 1                  NaN              NaN            0
+## 2                    1         1.000000            1
+## 3                    1         2.666667            1
+## 4                    1         3.750000            1
+## 5                    1       389.200000            1
+## 6                    1        67.366667            1</code></pre>
+</div>
 </div>
 
 

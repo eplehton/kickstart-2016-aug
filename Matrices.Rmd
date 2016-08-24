@@ -1,0 +1,85 @@
+---
+title: "Matrices"
+date: "24.08.2016"
+output: html_document
+---
+
+Matrices
+===============================
+
+Data frames are 2 x 2 tables, where variables are always on columns and cases on rows. There is also another way to represent tabular data by using matrices. 
+
+```{r}
+# First beside one another
+# Let's create a couple of vectors
+
+kek <- seq(1,20,2)
+kek
+kone <- runif(n = 10,min = 1,max=30)
+kone
+
+#kone is a vector of random uniformly distributed continuous values, picked from the range [1...30]
+
+kekkone <- cbind(kek,kone)
+kekkone
+
+#cbind is a short for "bind columns together", and that's what was done
+
+class(kekkone)
+names(kekkone)
+```
+We have created a matrix. Notice names does not give a vector of variable names. Matrix can usually be transformed into a data frame by saying:
+
+```{r}
+
+kekkone.df <- as.data.frame(kekkone)
+
+kekkone.df
+```
+
+
+
+
+```
+
+If the values in the vectors were the values of ten different values, we could say:
+
+```{r}
+konekek <- rbind(kek,kone)
+konekek
+
+# rbind is short for "bind rows together", or stack them on top of one another
+
+konekek.df <- as.data.frame(konekek)
+konekek.df
+
+
+names(konekek.df) <- c("Openness", "Conscientciousness", "Extroversion","Agreeableness",
+                       "Neuroticism", paste("X",1:5,sep=""))
+names(konekek.df)
+konekek.df
+
+# Vectors can be combined by c (short for combine)
+longvector <- c(kek,kone)
+
+
+```
+
+Data frame can be easily converted to 2 x 2 matrix. 
+```{r}
+
+as.matrix(kekkone.df)
+
+```
+
+Matrix calculations
+--------------------------
+
+Many statistical methods are actually based on linear algebra, which is mostly manipulation of matrices. Fortunately, most of this stuff is hidden behind the scenes when using R's functions. However, here is an example of matrix multiplication. 
+
+```{r}
+X <- matrix(c(1, 2, 3, 4, 5, 6), nrow=2)
+Y <- matrix(c(2, 2, 2), nrow=3)
+
+X %*% Y
+```
