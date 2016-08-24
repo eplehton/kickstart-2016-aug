@@ -1,16 +1,16 @@
 #
-# Exercises
+# Exercises in aggregating and subsetting data
 # 
 
 #############
-# 1) Let's continues with the population data. Read the population data to the a data frame.
+# 1) Let's continue working with the population data. Read the population data into a data frame.
 
 
 #############
-# 2) Create two variables which indicate municipalities with:
+# 2) Create two variables which indicate municipalities
 #
-# Largish population (> 50 000) and small population
-# Increasing population and descreasing population.
+# a) with a largish population (> 50 000) vs. those with a small population
+# b) with an increasing population vs. a decreasing population.
 
 
 
@@ -27,7 +27,7 @@
 
 ###################################
 # 4) Find out the equation for the standard error of mean (SEM). Then 
-# modify the ddply-calls above to include also it. 
+# modify the ddply-calls above to include it. 
 
 
 
