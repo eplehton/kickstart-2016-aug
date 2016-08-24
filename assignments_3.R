@@ -1,35 +1,36 @@
 #
-# Exercises
+# Exercises in loading and subsetting data
 # 
 
 ##############################
-# 1) Load data the academics data from the file academics_data.R or from one of the
+# 1) Load the academics data from the file academics_data.R or from one of the
 # text files you created during the previous assignments. 
 
 ##############################
 # 2) How could we ask for the summary of all variables for females?
 # 
-# Hint: Learn to solve the problems by dividing it to smaller steps. 
-# Solve first the problem of subsetting the females out of the data frame. 
-# Then solve the problem of describing them.
+# Hint: Learn to solve the problems by dividing them into smaller subproblems:
+# go step by step. First, solve the problem of subsetting the data frame so that 
+# you'll have a new data frame consisting only of females. Then solve the problem 
+# of describing the new data frame.
 
 ##############################
 # 3) Are the salaries of the females and males in this sample of academics equal?
 #
 
 ##############################
-# 4) Load data frame from file Population_in_Finland.csv.
+# 4) Load data from the file "Population_in_Finland.csv" into a new data frame.
 #
-# Hint: The file contain the title and some meta information in the beginning.
-# Use parameter skip with read.table to ignore them. 
-# You may also need to set header=TRUE explicitly.  
+# Hint: The file contains a title and some metadata in the beginning of the file.
+# Use the parameter "skip" with "read.table" to ignore this extra information. 
+# You may also need to set "header=TRUE" explicitly.  
 
 
 #############################
 # 5) Divide the population data by the population change (decreasing, increasing). 
 #
-# Before you find out the right answers to the following questions based on the data, 
-# try create a hypothesis:
+# Before you find out the right answers to the following questions by examining the data, 
+# create a hypothesis: what do you think the answers will be?
 #
 # Are there more municipalities with increasing population than with decreasing population? 
 #
@@ -40,8 +41,6 @@
 
 
 ############################
-# 7) Is there municipalities which attract more females than males and vice versa?
-# Updated: The question is actually a bit complicated. You can just look for example
-# are there municipalities which has females moving in and males moving out.
-
+# 7) Are there municipalities into which women are moving and from which men are moving out? What about the opposite,
+# are there municipalities into which men are moving and from which women are moving out?
 
