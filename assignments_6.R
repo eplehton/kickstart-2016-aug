@@ -1,5 +1,5 @@
 #
-# Exercises
+# Exercises in plotting data and using ggplot2
 #
 
 #####
