@@ -72,3 +72,14 @@ as.matrix(kekkone.df)
 
 ```
 
+Matrix calculations
+--------------------------
+
+Many statistical methods are actually based on linear algebra, which is mostly manipulation of matrices. Fortunately, most of this stuff is hidden behind the scenes when using R's functions. However, here is an example of matrix multiplication. 
+
+```{r}
+X <- matrix(c(1, 2, 3, 4, 5, 6), nrow=2)
+Y <- matrix(c(2, 2, 2), nrow=3)
+
+X %*% Y
+```
