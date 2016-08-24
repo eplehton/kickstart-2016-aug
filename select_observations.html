@@ -104,7 +104,10 @@ academics</code></pre>
 ## Heppu Kaalinpää                    8      M
 ## Merikeiju Jumalankiitos           20      F
 ## Meirami Pervonkallio              30      M</code></pre>
-<pre class="r"><code># Oops! There's a mistake in the gender of the rector! Let's correct:
+<pre class="r"><code># What is going on? row.names(academics) returns a vector, and its members can be 
+# accessed using indexing, and also assigned. 
+
+# Oops! There's a mistake in the gender of the rector! Let's correct:
 
 academics[&quot;Meirami Pervonkallio&quot;,&quot;gender&quot;] &lt;- &quot;F&quot;
 academics</code></pre>
@@ -249,6 +252,27 @@ academics[as.logical(c(1,1,1,1,0,0)),]</code></pre>
 ## Miina Kenttä                    8            3
 ## Merikeiju Jumalankiitos      7784           20
 ## Meirami Pervonkallio         2021           30</code></pre>
+</div>
+<div id="creating-values-conditionally" class="section level2">
+<h2>Creating values conditionally</h2>
+<p>Sometimes it’s necessary to create new variables conditionally, conditioned on the values of other variables. You can think that this is actually performing a something for a selected subset of an observation.</p>
+<p>For instance, we could be interested to calculate a new variables which describes weather a person has citations or not:</p>
+<pre class="r"><code>academics$hasCitations &lt;- ifelse(academics$citations &gt; 0, 1 ,0)
+academics</code></pre>
+<pre><code>##                                   position salaryBeforeTaxes citations
+## Cosmo Kiveskoski             Thesis worker                 0         0
+## Kalja Naulapää          Research assistant              1700         1
+## Miina Kenttä              Doctoral student              2200         8
+## Heppu Kaalinpää                    Postdoc              3200        30
+## Merikeiju Jumalankiitos          Professor              5500      7784
+## Meirami Pervonkallio                Rector             25000      2021
+##                         workingYears gender hasCitations
+## Cosmo Kiveskoski                   0      M            0
+## Kalja Naulapää                     1      M            1
+## Miina Kenttä                       3      F            1
+## Heppu Kaalinpää                    8      M            1
+## Merikeiju Jumalankiitos           20      F            1
+## Meirami Pervonkallio              30      F            1</code></pre>
 </div>
 </div>
 

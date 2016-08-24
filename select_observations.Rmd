@@ -90,6 +90,9 @@ row.names(academics)[6] <- "Meirami Pervonkallio"
 
 academics
 
+# What is going on? row.names(academics) returns a vector, and its members can be 
+# accessed using indexing, and also assigned. 
+
 # Oops! There's a mistake in the gender of the rector! Let's correct:
 
 academics["Meirami Pervonkallio","gender"] <- "F"
@@ -208,4 +211,21 @@ As a final remark, indexing rows (observations) and columns (variables) can natu
 
 ```{r}
 academics[academics$gender == "F", 3:4]
+```
+
+
+
+
+Creating values conditionally
+--------------------------------------
+
+Sometimes it's necessary to create new variables conditionally, conditioned on the values of
+other variables. You can think that this is actually performing a something for a selected subset of an observation. 
+
+For instance, we could be interested to calculate a new variables which describes weather a person has citations or not:
+
+```{r}
+academics$hasCitations <- ifelse(academics$citations > 0, 1 ,0)
+academics
+
 ```

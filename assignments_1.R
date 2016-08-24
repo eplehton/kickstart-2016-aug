@@ -1,6 +1,7 @@
 #
-# Exercises
-# 
+# Exercises: Creating vectors and data frames and assigning them to variables.
+# Using operators in calculations. Using built-in functions in the calculations. 
+#
 
 ##############################
 # 1) There are some variables:

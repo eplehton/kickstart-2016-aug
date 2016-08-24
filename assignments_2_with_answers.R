@@ -1,5 +1,5 @@
 #
-# Exercises
+# Exercises: Reading data from a file and writing it to a file. 
 # 
 
 ##############################

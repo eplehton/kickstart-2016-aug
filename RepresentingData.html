@@ -101,13 +101,33 @@ class(c(&quot;Vector&quot;, &quot;says&quot;, &quot;hello!&quot;))
 
 length(&quot;Vector&quot;)
 length(c(&quot;Vector&quot;, &quot;says&quot;, &quot;hello!&quot;))</code></pre>
-<p><a href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Vector-objects">R lang defitions: Vectors</a></p>
+<p><a href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Vector-objects">More about vectors in R language defition</a></p>
 </div>
 <div id="variables" class="section level2">
 <h2>Variables</h2>
 <p>In the above example, we created vectors on the fly. However, typically we want to create some data (or read it from a file) and then store it to a variable for later use.</p>
 <pre class="r"><code>foo &lt;- c(2, 4, 6, 8)
 bar &lt;- &quot;Hei hoi!&quot;</code></pre>
+<p>With variables we have a new way to use vectors which has more than one member. We can access each member by using a its index. It is also possible change individual members.</p>
+<pre class="r"><code>foo[2]</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>foo[2] &lt;- 500
+foo</code></pre>
+<pre><code>## [1]   2 500   6   8</code></pre>
+<p>You can use variables also in creation of new vectors.</p>
+<pre class="r"><code>thesisWorker &lt;- 0
+researchAssistant &lt;- 1700
+doctoralStudent &lt;- 2200
+postdoc &lt;- 3200
+professor &lt;- 5500
+rector &lt;- 25000
+
+salaryBeforeTaxes &lt;- c(thesisWorker, 
+                       researchAssistant,
+                       doctoralStudent,
+                       postdoc,
+                       professor,
+                       rector)</code></pre>
 </div>
 </div>
 <div id="operators" class="section level1">
@@ -136,39 +156,15 @@ many_numbers * 2</code></pre>
 <div id="comparative-operators" class="section level2">
 <h2>Comparative operators</h2>
 <p>In the above, we used comparator operator &gt;. They can be used to compare things, and the results will be either TRUE or FALSE.</p>
-<p><a href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Operators">Operators</a></p>
-<pre class="r"><code>5 &gt; 2   # is greater than</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>5 &lt; 2   # is smaller than</code></pre>
-<pre><code>## [1] FALSE</code></pre>
-<pre class="r"><code>5 == 2  # is equal to</code></pre>
-<pre><code>## [1] FALSE</code></pre>
-<pre class="r"><code>5 != 2  # is not equal to</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>5 &gt;= 5   # is greater or equal</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>5 &lt;= 5   # is smaller or equal </code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>!(5 == 2)  # ! alone is negation</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<p>We can use a variables also in creation of new vectors.</p>
-<pre class="r"><code>thesisWorker &lt;- 0
-researchAssistant &lt;- 1700
-doctoralStudent &lt;- 2200
-postdoc &lt;- 3200
-professor &lt;- 5500
-rector &lt;- 25000
+<pre class="r"><code>5 &gt; 2   # is greater than
+5 &lt; 2   # is smaller than
+5 == 2  # is equal to
+5 != 2  # is not equal to
+5 &gt;= 5   # is greater or equal
+5 &lt;= 5   # is smaller or equal 
 
-salaryBeforeTaxes &lt;- c(thesisWorker, 
-                       researchAssistant,
-                       doctoralStudent,
-                       postdoc,
-                       professor,
-                       rector)
-
-employerCosts &lt;- salaryBeforeTaxes * 1.56 
-employerCosts</code></pre>
-<pre><code>## [1]     0  2652  3432  4992  8580 39000</code></pre>
+!(5 == 2)  # ! alone is negation</code></pre>
+<p><a href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Operators">More about operators in R language definition</a></p>
 </div>
 </div>
 <div id="scripts-or-algorithms" class="section level1">
@@ -350,27 +346,6 @@ academics</code></pre>
 ## 4                    1         3.750000
 ## 5                    1       389.200000
 ## 6                    1        67.366667</code></pre>
-</div>
-<div id="extra-stuff-creating-values-conditionally" class="section level2">
-<h2>Extra stuff: Creating values conditionally</h2>
-<p>Sometimes it’s necessary to create new variables conditionally, conditioned on the values of other variables</p>
-<p>For instance, we could be interested to calculate a new variables which describes weather a person has citations or not:</p>
-<pre class="r"><code>academics$hasCitations &lt;- ifelse(academics$citations &gt; 0, 1 ,0)
-academics</code></pre>
-<pre><code>##             position salaryBeforeTaxes citations workingYears costs
-## 1      Thesis worker                 0         0            0     0
-## 2 Research assistant              1700         1            1  2652
-## 3   Doctoral student              2200         8            3  3432
-## 4            Postdoc              3200        30            8  4992
-## 5          Professor              5500      7784           20  8580
-## 6             Rector             25000      2021           30 39000
-##   citatonsPerCitations citationsPerYear hasCitations
-## 1                  NaN              NaN            0
-## 2                    1         1.000000            1
-## 3                    1         2.666667            1
-## 4                    1         3.750000            1
-## 5                    1       389.200000            1
-## 6                    1        67.366667            1</code></pre>
 </div>
 </div>
 
