@@ -1,19 +1,20 @@
 #
-# Exercises
+# Exercises in plotting data and using ggplot2
 #
 
 #####
-# 1) Load dataset sleep from the R dataset repository using command data(sleep).
-#    Get accustomed to the data. 
+# 1) Load the dataset "sleep" from the R dataset repository using the command "data(sleep)".
+#    Get acquainted with the data. 
 
 data(sleep)
-describe(sleep)
-?sleep
-str(sleep)
+
+describe(sleep) # descriptive statistics
+?sleep # R help contains information on the built-in datasets
+str(sleep) # which types of variables?
 class(sleep$extra)
 class(sleep$group)
 class(sleep$ID)
-?typeof
+?typeof # an additional command for investigating the structure of variables
 typeof(sleep$extra)
 typeof(sleep$group)
 typeof(sleep$ID)
@@ -23,8 +24,8 @@ typeof(sleep$ID)
 # 2) Create different kinds of plots, using both boxplot and ggplot2, to describe the
 # differences between the two drugs. 
 
-boxplot(extra~group,sleep)
-plot(sleep$extra,sleep$group)
+boxplot(extra~group,sleep) # basic boxplot
+plot(sleep$extra,sleep$group) # basic scatterplot
 
 library(ggplot2)
 
@@ -41,12 +42,13 @@ ggplot(data = sleep, aes(extra)) + geom_histogram(binwidth=.8)
 ggplot(data = sleep, aes(extra)) + geom_histogram(binwidth=.8,color="black", fill="white")
 # Compare groups:
 ggplot(data = sleep, aes(x=extra,fill=group)) + geom_histogram(binwidth=2,alpha=.3, position="identity")
-# This looks a bit silly because there are so few observations. The idea of plotting overlaid histograms is nice, though.
+# This looks a bit silly because there are so few observations. 
+# The idea of plotting overlaid histograms is nice, though.
 
 
 ######
-# 3) Test the difference between the two drugs to extra hours of sleep using 
-# Student's paired t-test.
+# 3) Do the two drugs have different effects on extra hours of sleep? Carry out 
+# Student's paired t-test to investigate.
 
 # What was the syntax again..?
 ?t.test
@@ -56,16 +58,19 @@ ddply(sleep,.(group), summarize, SD = sd(extra)) # Pretty much so
 
 t.test(sleep$extra~sleep$group, paired=TRUE, var.equal = TRUE)
 
-### 
-# 4) The data is in long format. Reshape the data to wide format, so the two observations
-# from the same participant (denoted with variable group) are on their own variables. 
+########## 
+# 4) The data is in the long format. Reshape the data into the wide format 
+# so that the two observations from the same participant (denoted with variable group)
+# are contained in their own variables. 
+
+library(reshape2)
 
 widesleep <- dcast(sleep,ID~group,value.var="extra") # Don't forget the quotes!
 widesleep
 
 
-###
-# 5) Create a scatter plot where the extra hours for drug 1 are on the x-axis, and
+########## 
+# 5) Create a scatter plot where the extra hours of sleep for drug 1 are on the x-axis, and
 # the extra hours for drug 2 are on the y-axis. 
 
 # I need to rename the columns of the new dataset first:
@@ -75,7 +80,7 @@ names(widesleep)
 # Then I can produce the basic scatterplot
 ggplot(widesleep, aes(x=drug1,y=drug2)) + geom_point()
 
-# Or fine-tune it a bit, fooling around with colors:
+# Or fine-tune it a bit, fooling around with colors for instance:
 ggplot(widesleep, aes(x=drug1,y=drug2)) + geom_point(color="#FF33FF",size=3) + theme_light()
 
 # Or see who is where based on subject ID:
@@ -92,7 +97,7 @@ gameraw <- read.table("kr_gameraw.txt",header=TRUE)
 head(gameraw)
 
 # Calculate the accuracy of responses for each participant. See the lecture notes (rmANOVA.html) 
-# how to calculate it. 
+# for instructions on how to calculate it. 
 
 accuracy <- ddply(gameraw, .(player_id), summarize, 
                   Phit = mean(hit),
@@ -102,26 +107,19 @@ accuracy <- ddply(gameraw, .(player_id), summarize,
 head(accuracy)
 
 ####
-# 7) Make a plot which describes the level of accuracy by age group and gender. 
-# Run ANOVA 2 x 2 to investigate if there are differences in accuracy as a function of age group or gender, 
-# weather there is interaction of age group and gender?
+# 7) Create a plot which describes the level of accuracy by age group and gender. 
+# Run a 2 x 2 ANOVA to investigate if there are differences in accuracy as a function of age group or gender, 
+# and whether there is an interaction effect for these two variables.
+
 head(gameraw)
 
 # Let's produce another data set with the accuracy, age group and gender variables
 
-gameacc <- ddply(gameraw, .(player_id), mutate, ### Markus, why mutate? 
+gameacc <- ddply(gameraw, .(player_id, age_grp, gender), summarize, 
                  Phit = mean(hit),
                  Pcorrej = mean(correctRejection),
                  accuracy = Phit + Pcorrej)
-head(gameacc)
 
-gameacc <- gameacc[-c(3:9,11,12)] 
-gameacc <- unique(gameacc)
-
-temp <- ddply(gameraw, .(player_id), mutate,
-                 Phit = mean(hit),
-                 Pcorrej = mean(correctRejection),
-                 accuracy = Phit + Pcorrej)
 head(gameacc)
 
 # Let's produce a barplot:
@@ -136,41 +134,37 @@ ggplot(gameacc, aes(x=age_grp,y=accuracy,fill=gender)) + geom_bar(position=posit
 ggplot(gameacc, aes(x=age_grp,y=accuracy,fill=gender)) + geom_boxplot() +
       scale_x_discrete(labels=c("Adult", "Child")) + xlab("Age group") + guides(fill=guide_legend(title=NULL))
 
-# Let's calculate the ANOVA using the car package:
+# Let's calculate the ANOVA using the car package, and remember to set the contrasts correctly!
 
 library(car)
 
+options("contrasts")
+options(contrasts=c('contr.sum','contr.poly'))
+
 model.acc <- lm(accuracy ~ age_grp*gender, data=gameacc)
 
-# This produces the same result:
-model.acc2 <- aov(accuracy ~ age_grp*gender, data=gameacc)
-
-summary(model.acc)
-summary(model.acc2)
-
 Anova(model.acc,type=3)
-Anova(model.acc2,type=3)
 
 # This is also one way to calculate type III Sums of Squares:
 drop1(model.acc,~.,test="F") 
 
 # There are only differences between the two age groups, no interaction and no effect of gender
 
-####
-# 8) In the lecture notes the game was divided into three sets, and then we investigated learning effects 
+############
+# 8) In the lecture notes the game was divided into three sets, and we investigated learning effects 
 # over the course of the game. Perform a repeates measures ANOVA to investigate whether gender has 
 # an effect on learning. This means that you need to investigate the interaction of set and gender. 
 
 gameraw$set <- recode(gameraw$video_id,"0:9=1; 10:19=2; 20:29=3")
 gameraw$set <- ordered(gameraw$set)
+
 aggredata <- ddply(gameraw, .(age_grp, player_id, set,gender), summarize,
                 Phit = mean(hit),
                 PcorrectRejection = mean(correctRejection),
                 accuracy = Phit + PcorrectRejection)
 head(aggredata)
 
-install.packages("ez")
-require(ez)
+library(ez)
 
 rep.model <- ezANOVA(aggredata, 
                      dv=accuracy, 
