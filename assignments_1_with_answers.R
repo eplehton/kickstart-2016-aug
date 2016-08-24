@@ -8,15 +8,16 @@
 availableCoffee <- 1000  # in grams
 neededForEspresso <- 7    
 
-# Using the variables, calculate how much coffee you need for a 6 espressos?
+# Using the variables, calculate how much coffee you need for 6 espressos?
 
 coffee6espressos <- 6*7
 coffee6espressos
 
-# How many espressos you get from the available coffee? 
+# How many espressos do you get from the available coffee? 
 
 howmanycoffees <- 1000 / 7
 howmanycoffees
+
 
 ##############################
 # 2) There is some data about a fictional research group:
@@ -26,26 +27,27 @@ month <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
 coffeeConsumption <- c(8, 6, 4, 5, 7, 9, 7, 7, 10, 6, 7, 7) # in kilograms
 articlesSubmitted <- c(2, 0, 0, 0, 1, 0, 1, 4, 1, 0, 0, 2)
 
-# Check that all the vectors are of equal length. Use function length. 
+# Check that all the vectors are of equal length. Use the function "length". 
 
 length(month)
 length(coffeeConsumption)
 length(articlesSubmitted)
-# tai jos haluaa hienostella:
+# you can also get acquainted with the function "identical" in this context:
 
 identical(length(month),
           length(coffeeConsumption),
           length(articlesSubmitted))
 
-# Learn to use function mean:
-# What are the average coffee consumption and the average number of articles submitted?
+
+# Learn to use the function "mean":
+# What are the group's average coffee consumption and the average number of articles submitted?
 
 mean(coffeeConsumption) # On average, the group consumes 6.9 kilograms of coffee / month
 mean(articlesSubmitted) # On average, the group submits 0.9 articles / month
 
-# Learn to use function sum:
-# Calculate the average coffee consumption without the function mean, using only 
-# functions sum and length, and the variable coffeeConsumption. 
+# Learn to use the function "sum":
+# Calculate the average coffee consumption without using the function "mean", using only the
+# functions "sum" and "length", and the variable coffeeConsumption. 
 
 sum(coffeeConsumption) / length(coffeeConsumption)
 
@@ -55,8 +57,8 @@ identical(mean(coffeeConsumption),(sum(coffeeConsumption) / length(coffeeConsump
 
 # What happens if you try to give the vector month to the function mean?
 
-mean(month)
-# Does not work on character vectors
+mean(month) # Does not work on character vectors
+
 typeof(month)
 
 #################################### Please note! ########################################################################
@@ -77,10 +79,13 @@ v1*v3
 # So we see that in the case of vectorized computation, R implicitly recycles the shorter vector, in some cases 
 # without notifying the user of this!!!
 
-###############################
-# 3) Create a data frame of the vectors above and assing it to a variable named "coffee"
 
-coffee <- data.frame(month,coffeeConsumption,articlesSubmitted)
+
+###############################
+# 3) Create a data frame of the vectors above and assign it to a variable named "coffee"
+
+coffee <- data.frame(month, coffeeConsumption, articlesSubmitted)
+
 
 # View the data frame you created.
 
@@ -88,69 +93,68 @@ coffee
 View(coffee)
 
 ###############################
-# 4) Calculate a new variable "espressos" to the data frame, which describes how may espressos the 
-# research group consumed per month. Please use the previously defined variable 
-# neededForEspresso. 
+# 4) Calculate a new variable "espressos", which describes how may espressos the 
+# research group consumed per month. Include the variable in the data frame you created 
+# in problem 3. In solving this problem, please use the previously defined variable 
+# "neededForEspresso". 
 
 ##### This method of solving the problem works but should be avoided. I will explain below why this is so.
 
-coffee$espressos <- (coffeeConsumption*1000)/neededForEspresso
+coffee$espressos <- (coffeeConsumption * 1000) / neededForEspresso
 coffee
 
-# This method should be avoided because it's error-prone. Now the dataframe and our environment (think desktop)
-# both contain the variables "month", "coffeeConsumption" and "articlesSubmitted" and above, I'm creating a new
-# variable into the dataframe based on the variables "running free" in the environment. It would be better to 
-# do the calculations based on the variables already in the dataframe. To be sure, let's remove the variables
+# This method should be avoided because it's error-prone. Now the dataframe and our 
+# environment (think desktop) both contain the variables "month", "coffeeConsumption" 
+# and "articlesSubmitted" and above, I'm creating a new variable into the dataframe 
+# based on the variables in the environment. It would be better to do the calculations 
+# based on the variables already in the dataframe. To be sure, let's remove the variables
 # from the environment (we can always re-create them easily if needed): 
 
-rm(month,coffeeConsumption,articlesSubmitted)
+rm(month, coffeeConsumption, articlesSubmitted)
 
 # You can now see the above command doesn't work anymore:
 
-(coffeeConsumption*1000)/neededForEspresso
+(coffeeConsumption * 1000) / neededForEspresso
 
 # So let's do the same operation based on the variables in the dataframe:
 
-coffee$espressos <- (coffee$coffeeConsumption*1000)/neededForEspresso
+coffee$espressos <- (coffee$coffeeConsumption * 1000) / neededForEspresso
+
 
 ###############################
-# 5) Load package psych. Install it if needed. Use command install.packages("psych)
+# 5) Load the package "psych". Install it if needed. Use the command install.packages("psych"),
+# followed by library(psych)
 
 install.packages("psych")
 library(psych)
 
-# Use its function describe to show some describe statistics about the data frame coffee.
+# Use the function "describe" to show some statistics about the data frame "coffee".
 
 describe(coffee)
 
-# What was the skew and kurtosis of the variable "espressos"?
+# What was the skew and kurtosis of the variable "espressos"? Interpret the skew and kurtosis
+# statistics. 
 
-# skew: 0.12, i.e. right tail is slightly longer than the left; kurtosis: -0.61, i.e. slightly light-tailed distribution
+# skew: 0.12, i.e. right tail is slightly longer than the left; kurtosis: -0.61, 
+# i.e. slightly light-tailed distribution
 
-hist(coffee$espressos) #well...
-
-
+hist(coffee$espressos) #well... It's good to always plot the data in addition to interpreting
+# the numbers!
 
 
 #############################
-# 6) Learn to use function cor for calculation correlations. 
+# 6) Learn to use the function "cor" for calculating correlations. 
+ 
+# What is Pearson's correlation for articles submitted and coffee consumption?
 
-# What is Pearson's correlation of articles submitted and coffee consumption?
-
-# Here you can write either 
-
-cor(articlesSubmitted, coffeeConsumption)
-# or
 cor(coffee$articlesSubmitted, coffee$coffeeConsumption)
-# because the vectors are available both as variables and as part of the data frame. 
 
-# What is Spearman's correlation of articles submitted and coffee consumption?
+# What is Spearman's correlation for articles submitted and coffee consumption?
 
-cor(articlesSubmitted, coffeeConsumption, method="spearman")
-# or
 cor(coffee$articlesSubmitted, coffee$coffeeConsumption, method="spearman")
 
 # Hmmm, why the big difference?
+
 plot(coffee$articlesSubmitted,coffee$coffeeConsumption)
 
 #############################
@@ -166,38 +170,39 @@ tea <- data.frame( month = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "A
 # Calculate the correlation of teaConsumption and submitted grant applications. 
 # Use $-notation, like tea$teaConsumption to access the variables in the data frame.
 
+cor(tea$teaConsumption,tea$grantApplicationsSubmitted)
+
 ################
-# 8) Accessing variables in a data frame using with. 
-# Instead of $-notation, write the call to the cor function like this: cor(teaConsumption, grantApplicationsSubmitted)
-# This should not work as standalone. Use with to define the context. 
+# 8) Accessing variables in a data frame using the functino "with". 
+# Instead of $-notation, write the call to the "cor" function like this: cor(teaConsumption, grantApplicationsSubmitted)
+# This should not work, because variables with these names aren't to be found in the environment. Use "with" to define the context. 
 
 with(tea, cor(teaConsumption, grantApplicationsSubmitted))
 
-
-
-##############################
-# 9) Make a copy of the data frame coffee to another variable, and change the names of the variables.
-# You are free to invent you own names.
+################
+# 9) Create a copy of the data frame "coffee" into a new variable, and change the names 
+# of the variables. You can choose any names you feel like.
 
 coffee2 <- coffee
 names(coffee2) <- c("Petra", "Olli", "painii", "Riossa")
 coffee2
 
-#############################
-# 10) Create missing values with function fix. Enter command fix(coffee).
 
-fix(coffee)
+#############################
+# 10) Create missing values with the function "fix". Enter the command "fix(coffee)".
 
 # Fix can be useful if have small datasets and you need to make some small changes to the data
-# interactively. However, remember that the changes are stored only to the data frame in your computer's
-# memory. If you have loaded the data from file, the changes are not automatically saved, fortunately.
-# I say fortunately, because editing with your data interactively is potentially a great error. 
-# How to keep track of the changes you made? 
+# interactively. However, remember that the changes are stored only to the data frame in your 
+# computer's memory. If you have loaded the data from file, the changes are not automatically 
+# saved, fortunately. I say fortunately, because editing your data interactively makes it 
+# impossible to keep track of the changes you've made. Also: Compare with the usual workflow
+# in a GUI-based program such as SPSS or Excel. 
 
-# Create a couple of missing values to variable coffeeConsumption. The cell should display NA. Then close the 
-# editing window. 
 
-# Try to calculate mean of the coffee consumption using function mean by giving the following command:
+# Create a couple of missing values in the variable coffeeConsumption. The cell should display NA. 
+# Then close the editing window. 
+
+# Try to calculate mean of the coffee consumption using the function "mean", i.e. by running the command
 
 mean(coffee$coffeeConsumption)
 
@@ -205,7 +210,7 @@ mean(coffee$coffeeConsumption)
 
 # NA is returned
 
-# How you can use parameter na.rm to ignore the missing values? 
+
+# How can you use the parameter "na.rm" of the function "mean" to ignore the missing values? 
 
 mean(coffee$coffeeConsumption,na.rm = TRUE)
-
