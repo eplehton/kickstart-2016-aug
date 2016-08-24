@@ -1,89 +1,65 @@
 #
-# Exercises in comparing two groups
+# Exercises in aggregating and subsetting data
 # 
 
-##################
-# 1) Load the game performance data from file kr_gamewmc.txt
-# Recalcualte the accuracy. 
+#############
+# 1) Let's continue working with the population data. Read the population data into a data frame.
 
-game.wmc <- read.table("kr_gamewmc.txt", header=TRUE)
-game.wmc$accuracy <- game.wmc$Phit + game.wmc$PcorrectRejection
+Finland <- read.csv("Population_in_Finland.csv", header=TRUE, skip=5)
 
-##################
-# 2) Find out whether there are differences in accuracy between genders using an appropriate statistical test.
+
+#############
+# 2) Create two variables which indicate municipalities
 #
-# a) Use the confidence level of 99%
+# a) with a largish population (> 50 000) vs. those with a small population
+# b) with an increasing population vs. a decreasing population.
 
-t.test(formula = accuracy ~ gender, data = game.wmc, conf.level=0.99)
+head(Finland)
+Finland$large <- ifelse(Finland$X31.12.2014.Total > 50000,1,0)
+table(Finland$large) # How many large and small municipalities are there?
+# There are only 20 municipalities with more than 50 000 inhabitants and 297 with less.
 
-# Note the function call above: I explicitly specified each argument by its name, i.e. "formula = "; 
-# "data =" and "conf.level = ". These can be left out when there is no question of which argument the parameter value 
-# belongs to (compare the above call to the t.test function with that below).
+Finland$increasing.pop <- ifelse(Finland$Change.during.2014.Total > 0, 1, 0)
+table(Finland$increasing.pop) # How many municipalities are there with increasing population?
+# 96 municipalities with increasing population.
 
-# b) Perform a one-sided test
-
-t.test(accuracy ~ gender, game.wmc, alternative="greater")
-
-# c) By default, R does not assume the variances of the dependent variable to be equal in the two groups, 
-# i.e. the program computes the Welch t-test by default. 
-
-#    How can you change this?
-
-t.test(accuracy ~ gender, game.wmc, conf.level=0.99, var.equal=T)
-
-##################
-# 3) Instead of a t.test, try to use a non-parametric alternative. Hint: ?wilcox.test
-
-wilcox.test(accuracy ~ gender, data=game.wmc)
-
-#################
-# 4) Load the population data again (Population_in_Finland.csv) and divide the municipalities according to their size and
-# population change (increasing, decreasing). 
+############
+# 3) Using ddply, calculate some descriptive statistics like mean, standard deviation and frequency
+# for:
 #
-# Hint: If you have completed the assignment, it is easy to use the function "source" to reload it. 
+# a) large and small cities
 
-source('assignments_4_with_answers.R') # check the path and file name so that they match
+library(plyr)
 
-#################
-# 5) Create boxplots which describe how cities with increasing population are different from
-# cities with decreasing population. You can examine, say, the total population and the number males and females. 
+ddply(Finland, .(large), summarize, M = mean(X31.12.2014.Total), SD = sd(X31.12.2014.Total), freq = length(large))
 
-boxplot(X31.12.2014.Total ~ increasing.pop, Finland)
-boxplot(X31.12.2014.Males ~ increasing.pop, Finland)
-boxplot(X31.12.2014.Females ~ increasing.pop, Finland)
+# b) those with increasing and descreasing population
 
-# Do you see the problem with these boxplots? How would you address the problem?
+ddply(Finland, .(increasing.pop), summarize, M = mean(X31.12.2014.Total), SD = sd(X31.12.2014.Total), freq = length(large))
 
-# There is one outlying value in the municipalities with increasing population and choosing the
-# scale of the y-variable so that the population of this municipality is shown will make the rest
-# of the plot pretty much unreadable. The issue can be addressed by choosing a logarithmic scale 
-# for the y-axis. Note that this is different from first performing a logarithmic transformation
-# on the y-variable and then creating a boxplot. The logarithmic scale can be chosen by saying:
+# c) for all four categories, large with increasing pop, large with decreasing pop etc.
 
-boxplot(X31.12.2014.Total ~ increasing.pop, Finland,log="y")
+ddply(Finland, .(large,increasing.pop), summarize, M = mean(X31.12.2014.Total), SD = sd(X31.12.2014.Total), freq = length(large))
 
+###################################
+# 4) Find out the equation for the standard error of mean (SEM). Then 
+# modify the ddply-calls above to include it. 
 
-#################
-# 6) Create boxplots which describe the population changes for largish (>50 000) 
-# and small municipalities. 
+ddply(Finland, .(large), summarize, 
+      M = mean(X31.12.2014.Total), 
+      SD = sd(X31.12.2014.Total), 
+      freq = length(large), 
+      SEM = SD/sqrt(freq))
 
-boxplot(Change.during.2014.Total ~ large, Finland)
-boxplot(Change.during.2014.Females ~ large, Finland)
-boxplot(Change.during.2014.Males ~ large, Finland)
+ddply(Finland, .(increasing.pop), summarize, 
+      M = mean(X31.12.2014.Total), 
+      SD = sd(X31.12.2014.Total), 
+      freq = length(large),
+      SEM = SD/sqrt(freq))
 
-#################
-# 7) Test if the population change is different and statistically significant (p < .05) 
-# between large and not large municipalities. Which test would you use?
+ddply(Finland, .(large,increasing.pop), summarize, 
+      M = mean(X31.12.2014.Total), 
+      SD = sd(X31.12.2014.Total), 
+      freq = length(large),
+      SEM = SD/sqrt(freq))
 
-t.test(Change.during.2014.Total ~ large, Finland)
-
-#Welch Two Sample t-test
-#
-#data:  Change.during.2014.Total by large
-#t = -2.9201, df = 19.007, p-value = 0.00878
-#alternative hypothesis: true difference in means is not equal to 0
-#95 percent confidence interval:
-# -2304.1692  -380.1587
-#sample estimates:
-#mean in group 0 mean in group 1 
-#      -20.06397      1322.10000 
