@@ -32,9 +32,9 @@ fa.parallel(bfi.items)
 # It is also good to keep in mind the reason for rotating the factor solution: we'd like to end up with 
 # as simple a factor structure as possible, i.e. one with many loadings close to one or zero. 
 # 
-# The Geomin rotation has been recommended for well-developed instruments for which it is likely that a
-# simple factor structure will be obtained. Big Five certainly has been researched a lot, so let's heed to
-# this advice. To do this, we'll need the "GPArotation" package
+# The Geomin rotation has been recommended (http://jpa.sagepub.com/content/29/4/304.full.pdf+html)
+# for well-developed instruments for which it is likely that a simple factor structure will be obtained. 
+# Big Five certainly has been researched a lot, so let's heed to this advice. To do this, we'll need the "GPArotation" package
 
 install.packages("GPArotation")
 
