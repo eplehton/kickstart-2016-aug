@@ -96,9 +96,9 @@ ggplot(widesleep, aes(x=drug1,y=drug2)) + geom_point() + geom_smooth(method=lm,s
 gameraw <- read.table("kr_gameraw.txt",header=TRUE)
 head(gameraw)
 
-# Calculate the accuracy of responses for each participant. See the lecture notes (rmANOVA.html) 
+# Calculate the accuracy of responses for each participant. See the lecture notes (Repeated measures ANOVA) 
 # for instructions on how to calculate it. 
-
+library(plyr)
 accuracy <- ddply(gameraw, .(player_id), summarize, 
                   Phit = mean(hit),
                   Pcorrej = mean(correctRejection),
@@ -123,16 +123,23 @@ gameacc <- ddply(gameraw, .(player_id, age_grp, gender), summarize,
 head(gameacc)
 
 # Let's produce a barplot:
-ggplot(gameacc, aes(x=age_grp,y=accuracy,fill=gender)) + geom_bar(position=position_dodge(), stat="identity") +
-      scale_x_discrete(labels=c("Adult", "Child")) + xlab("Age group") + guides(fill=guide_legend(title=NULL))
+library(ggplot2)
+
+ggplot(gameacc, aes(x=age_grp,y=accuracy,fill=gender)) + 
+  geom_bar(position=position_dodge(), stat="identity") +
+  scale_x_discrete(labels=c("Adult", "Child")) + 
+  xlab("Age group") + 
+  guides(fill=guide_legend(title=NULL))
 
 # The y-axis scale isn't all that useful, but setting ylim(.5,.9) won't work: if in bargraphs the lower bound isn't
 # zero, the bar won't be drawn at all!
 
 # And a boxplot:
 
-ggplot(gameacc, aes(x=age_grp,y=accuracy,fill=gender)) + geom_boxplot() +
-      scale_x_discrete(labels=c("Adult", "Child")) + xlab("Age group") + guides(fill=guide_legend(title=NULL))
+ggplot(gameacc, aes(x=age_grp,y=accuracy,fill=gender)) + 
+  geom_boxplot() +
+  scale_x_discrete(labels=c("Adult", "Child")) + xlab("Age group") + 
+  guides(fill=guide_legend(title=NULL))
 
 # Let's calculate the ANOVA using the car package, and remember to set the contrasts correctly!
 
@@ -143,17 +150,50 @@ options(contrasts=c('contr.sum','contr.poly'))
 
 model.acc <- lm(accuracy ~ age_grp*gender, data=gameacc)
 
-Anova(model.acc,type=3)
+Anova(model.acc, type=3)
 
-# This is also one way to calculate type III Sums of Squares:
+# This is also another way to calculate type III Sums of Squares without using car package:
 drop1(model.acc,~.,test="F") 
 
 # There are only differences between the two age groups, no interaction and no effect of gender
 
+##############################################################################
+# Here's a bit more advanced stuff that you will find useful 
+# it you are going to use R for publications
+
+# In case you would like to have least squares estimates for the effects and pairwise comparisons
+library(lsmeans)
+lsm <- lsmeans(model.acc, pairwise ~ age_grp)
+# here, first you get estimates and then comparison, which is not very interesting with two-level factors
+summary(lsm)
+
+# the interaction was not significant, so there is no much point to make more complex pairwise 
+# comparisons, but I show here how to do them
+lsm <- lsmeans(model.acc, pairwise ~ age_grp*gender)
+# remember to ask for the correct adjustment for pairwise comparisons' p-values
+summary(lsm, adjust="bonferroni") 
+
+# Based on lsm you could also produce plots of the effects
+# We grab the estimates from the object and convert it to a data frame with the function summary
+lsmeans.df <- summary(lsm$lsmeans)
+
+pd = position_dodge(width=0.6)
+ggplot(lsmeans.df, aes(x=age_grp, colour=gender, y=lsmean, ymin=lower.CL, ymax=upper.CL)) +
+  geom_point(position=pd, size=4) +
+  geom_errorbar(position=pd, width=0.2)
+
+# or more SPSS style ...
+ggplot(lsmeans.df, aes(x=age_grp, colour=gender, y=lsmean, group=gender)) +
+  geom_line()
+
+# partial eta squared effects sizes 
+library(heplots)
+etasq(model.acc)
+
 ############
 # 8) In the lecture notes the game was divided into three sets, and we investigated learning effects 
 # over the course of the game. Perform a repeates measures ANOVA to investigate whether gender has 
-# an effect on learning. This means that you need to investigate the interaction of set and gender. 
+# an effect on learning. This means that you need to investigate the interaction of the set and gender. 
 
 gameraw$set <- recode(gameraw$video_id,"0:9=1; 10:19=2; 20:29=3")
 gameraw$set <- ordered(gameraw$set)
@@ -164,7 +204,7 @@ aggredata <- ddply(gameraw, .(age_grp, player_id, set,gender), summarize,
                 accuracy = Phit + PcorrectRejection)
 head(aggredata)
 
-library(ez)
+library(ez) # We use ezANOVA for rm-ANOVA, because it is a bit easier
 
 rep.model <- ezANOVA(aggredata, 
                      dv=accuracy, 
@@ -173,6 +213,7 @@ rep.model <- ezANOVA(aggredata,
                      between = .(gender),
                      type=3)
 
+rep.model
 # Only the effect of set is statistically significant: 
 #$ANOVA
 #Effect DFn DFd            F           p p<.05          ges
