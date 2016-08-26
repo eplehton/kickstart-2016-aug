@@ -1,0 +1,130 @@
+---
+title: "Using ggplot to visualize correlations"
+author: "Markus"
+date: "26.08.2016"
+output: html_document
+---
+
+In psychology and other human sciences, correlational data is often used. For instance, factor analyses and ideas of psychological measurement lean heavily on the use of correlations. Because of this, it is useful to be able to present correlation data graphically. 
+
+Let's begin by importing a dataset that comes built-in with the R package *lavaan*. The data involves cognitive ability test scores from two schools from the beginning of the 20th century. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(lavaan)
+library(psych)
+library(semPlot)
+library(ggplot2)
+library(reshape2)
+library(qgraph)
+```
+
+```{r}
+?HolzingerSwineford1939
+```
+
+Let's first choose data only from one of the schools (the command below is a bit involved indeed!)
+
+```{r}
+Pasteur <- with(HolzingerSwineford1939,HolzingerSwineford1939[school=="Pasteur",])
+Pasteur.x <- Pasteur[grep("x[0-9]",names(Pasteur))] # I demonstrate using command "grep" in here, even though it's by no means necessary. grep is a command for finding text strings, a little bit like typing "Ctrl+F" in a text processor. Inside the square brackets we have grep("x[0-9]", names(Pasteur).  Here we use grep to find all text strings that contain the character "x" followed by any number from zero to nine. It searches for these text strings in the variable names of our new dataset "Pasteur". Then, the Pasteur data set is indexed using the results of grep: Pasteur[grep("x[0-9]",names(Pasteur))]. We would get the same result by saying simply: Pasteur[7:15]
+
+describe(Pasteur.x)
+boxplot(Pasteur.x)
+summary(Pasteur.x)
+```
+
+
+The variables seem to be on the same 0-10 scale with no obvious outliers or weird values
+Still, it's a 
+
+```{r}
+######################## A VERY IMPORTANT point to remember ################
+
+# To first check how missing values are coded and recode to NA if necessary! 
+
+# In this data, there are no missing values
+# Missing values being empty cells would also be fine
+# But sometimes missing data can be coded with, say, a large negative value
+# like -999. In that case, we'd need to remember to recode those values to 
+# empties, like so:
+
+Pasteur.x[Pasteur.x == -999] <- NA
+
+####################### \VIP ######################################
+```
+
+Let's then proceed to visualizing the correlations. First, we calculate the correlation matrix for the variables in Pasteur.x: there are nine variables, so we get a 9x9 correlation matrix. Then, we want to produce a plot of the correlation matrix so that the strength of a correlation between two variables is represented by the depth of color (deeper color = stronger correlation). 
+
+Do you remember how to arrange the data for these kinds of plots in ggplot? The idea was to have the variables that go on x-axis and y-axis side by side in the data (on the same row), together with the value to be plotted there. So we need to transform the data from wide format (correlation matrix) to long format. This is accomplished by using the default settings of the melt function. 
+
+```{r}
+round(cor(Pasteur.x),2) # correlations, rounded here to two decimal precision
+Pastcor <- melt(cor(Pasteur.x)) # transform to long format using the default settings of "melt"
+head(Pastcor,20)
+```
+
+The basic idea of creating the plot that we want (it's called a "heatplot") is as follows (we use the geom called "geom_tile"):
+
+```{r}
+ggplot(Pastcor, aes(x = Var1,y = Var2)) + 
+geom_tile(aes(fill=value))
+```
+
+So we are putting Var1 on x-axis and Var2 on y-axis (the first line of code above). Then, we choose to plot these as something called "tiles" - they are just the colorful boxes that you can see. In ggplot, the "what we are plotting as" is called the aesthetic of the plot - or aes in short. We make the color of the tile depend on what is found in the variable called "value" in the dataset we are working with (Pastcor).
+
+We could have chosen to plot the value as something else as well. For instance, we could have chosen *geom_text* to plot it as text. *geom_text* needs at least the parameter "label", which in this example is what is found in the variable "value", rounded to two decimal places. I'll also make the size of text depend on the absolute value of the correlation by saying "size = abs(value)". Then, small correlations are shown as small text - handy!
+
+```{r}
+ggplot(Pastcor, aes(Var1,Var2)) + 
+geom_text(aes( label=round(value,2), size=abs(value) ))
+```
+
+We might want to fine-tune our plot in many ways. I'll show some of these next.
+
+First, we could remove the texts "Var1" and "Var2" from where they are next to x-axis and y-axis. We do this by assigning the value "NULL" to x-axis label (xlab) and y-axis label (ylab)
+
+```{r}
+ggplot(Pastcor, aes(x = Var1,y = Var2)) + 
+geom_tile(aes(fill=value))  + xlab(NULL) + ylab(NULL) 
+```
+
+The colors of the plot can also be changed easily. I happen to like the green color more than the default blue, so I choose the colors of the plot by using *scale_fill_gradient*. Remember you can find information on all these by asking for it, for example: ?scale_fill_gradient.
+
+```{r}
+ggplot(Pastcor, aes(x = Var1,y = Var2)) + 
+geom_tile(aes(fill=value))  + xlab(NULL) + ylab(NULL) +
+scale_fill_gradient(low = "white",high="forestgreen")
+```
+
+There's still one thing that's bothering me: it seems that the variables in the plot are in the wrong order. It might be nice to have them in the reverse order, with x1 on top and x9 on the bottom. That turns out to be a little bit involved to accomplish, but I'll walk you through it. 
+
+By default, ggplot orders the x-variable and the y-variable in an ascending order on the axis. What we need to do is reverse the y-variable, and that is done by declaring Var2 as a variable of type factor (y= factor(Var2)) and then telling the program to reverse the levels of that factor (levels = rev(levels(Var2))). It's a little bit complicated operation, so let's check that we get the correct results by also including the value of the correlation coefficient in the tile using geom_text. We might further want to fine-tune the graph by adjusting the legends on the right side, but for the time being, we'll content ourselves with this result. Finally, let's also check that the results are correct by comparing those in the heatplot with the actual correlation matrix.
+
+It's a good exercise to play around with the settings of ggplot, go ahead and try it using this data or your own!
+
+```{r}
+ggplot(Pastcor, aes(x = Var1,y = factor(Var2, levels=rev(levels(Var2))))) + 
+geom_tile(aes(fill=value))  + xlab(NULL) + ylab(NULL) +
+scale_fill_gradient(low = "white",high="forestgreen") + 
+geom_text(aes(size=abs(value),label=round(value,2)))  
+
+cor(Pasteur.x)
+```
+
+It's actually a nice picture! Variables x4-x6 correlate the highest, while the next highest correlations are a little bit difficult to tell. Do you know when in agent and police movies the scientists press the "enhance" button to bring clarity to absolute messes of pictures? Let's see if we have the button in R and play around with the limits option a little:
+
+```{r}
+ggplot(Pastcor, aes(x = Var1,y = factor(Var2, levels=rev(levels(Var2))))) + 
+geom_tile(aes(fill=value))  + xlab(NULL) + ylab(NULL) +
+scale_fill_gradient(low = "white",high="forestgreen", limits=c(0.26,1)) 
+```
+
+That's a bit uglier, but more informative! Perhaps there are three groups of variables, x1-x3, x4-x6 and x7-x9. Still, x1 seems to correlate with almost everything, and x9 also has correlations with x1 and x3. 
+
+Still another way of visualizing the correlations draws from ideas of network analysis and mathematical graphs. Turns out correlation matrices can be visualized as weighted graphs using a pretty simple R command:
+
+```{r}
+qgraph(cor(Pasteur.x), graph="cor")
+```
+
+In the graph, the width and saturation of the lines reflect the size of the correlation. Positive correlations are by default represented by the green color and negative correlations by red color (not optimal for color blind people, though!)

@@ -1,0 +1,96 @@
+---
+title: "Reshaping data"
+author: "Markus & Esko"
+date: "August 22, 2016"
+output: html_document
+---
+
+
+Reshaping data
+==================================
+
+When using SPSS, you are quite often forced to reshape data between long and wide format. Certain analyses or plots of a certain type require the data in one format or the other. In R, such conversions between data formats are not necessary as often, but being able to do the trick is still a necessary skill in R. 
+
+Oftentimes when using ggplot2 to create graphics you may need to reshape the data frames. In ggplot, the variables of the data frame are mapped to the elements of the plot: for example, the values of variable A can be plotted on the x-axis and the values of variable B on the y-axis. The values to be mapped need to be located on a single row of the data frame. Other variables could be mapped to yet different properties, such as color, shape, etc.
+
+In the current data set (the game data), it would interesting to know how strongly the three sets of measurements are correlated. To do this, we'd need to have the data structured so that data from a single subject is on one row and the three measurement occasions are in different columns (i.e. we need the data in _wide format_). The data is currently in the _long format_. To produce the three scatter plots (1st set vs. 2nd set; 1st vs. 3rd; 2nd vs. 3rd), the proportion of correct answers in one set will be plotted on the x-axis and the in the other set on the y-axis: ggplot always needs the values to be plotted on x-axis and y-axis in consecutive columns. 
+
+
+
+Long to wide (dataset _gameraw_ contains the raw data)
+------------------
+```{r}
+
+
+library(plyr)
+library(car)
+
+# Let's first load in the data and re-calculate the necessary variables:
+
+gameraw <- read.table("kr_gameraw.txt", header=TRUE)
+gameraw$set <- recode(gameraw$video_id,"0:9=1; 10:19=2; 20:29=3")
+gameraw$set <- ordered(gameraw$set)
+aggregated <- ddply(gameraw, .(age_grp, player_id, set, gender), summarize,
+                Phit = mean(hit),
+                PcorrectRejection = mean(correctRejection),
+                accuracy = Phit + PcorrectRejection)
+head(aggregated)
+
+# There are different ways to transform data from the long format to the wide format. 
+# We'll use the package reshape2 in this example:
+
+library(reshape2)
+
+# The command to do the trick is called dcast.
+
+# The first argument is the data set to transform. Then, there's a formula which 
+# describes first the id-variables ("player_id" would suffice, but below we mention the 
+# variable "gender" as well to include it in the wide data set) and then the variable 
+# that identifies the recurring measurements (variable "set"). The third argument, 
+# "value.var" identifies the variable that contains the measurements:
+
+game.wide <- dcast(aggregated, gender + player_id ~ set, value.var = "accuracy")
+
+head(game.wide)
+
+# Let's give the variables better names:
+names(game.wide) <- c("gender", "player_id", paste("set", sep="", 1:3))
+
+# Let's also calculate the variance-covariance matrix and the correlation matrix:
+cov(game.wide[,3:5])
+cor(game.wide[,3:5])
+
+```
+
+For the sake of an exercise, let's transform the previous wide version of the data back to the long format. The command to do it is called _melt_ because obviously when you melt something it turns long and starts dripping downwards. The name of the previous command, _dcast_ derives from the same metaphor: casting metal into a container makes it wide, right?
+
+Wide to long
+---------------
+```{r}
+
+game.long <- melt(game.wide, id.vars = c("player_id", "gender") , measure.vars = c("set1", "set2", "set3"))
+
+head(game.long)
+
+# Above, I specified the id variables and the measure variables explicitly. I think this is a good practice # to stay on track of what you are doing. However, the built-in logic of the command is often able to 
+# correctly guess what you have in mind. The command below produces the same result as the previous one:
+
+game.long2 <- melt(game.wide, measure.vars = c("set1", "set2", "set3"))
+
+head(game.long2)
+
+# Here, the command correctly guessed that the variables not specified as measure variables are id 
+# variables. 
+
+# In this example, relying completely on the built-in smartness of the command won't work. The command 
+# below produces an incorrect result in this case:
+
+game.long3 <- melt(game.wide)
+
+head(game.long3)
+
+# So, because of situations such as this, it's best to explicitly specify the id variables and measure 
+# variables
+```
+
+It's a good idea to search for instructions online on how to use the _reshape2_ package. [This is one of my favorites](http://seananderson.ca/2013/10/19/reshape.html), with good graphics to help understand the underlying logic of the commands. 
