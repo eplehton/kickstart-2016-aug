@@ -18,29 +18,30 @@ head(game.raw)
 
 The data was about learning game, where each player player 30 video clips. 
 
-Question: Did players performance improve while playing the game? 
+Question: Did players' performance improve while playing the game? 
 -------------------------------------------------------------------
 
-A very straigforward way to examine this question would be to divide the 30 videos clips to three sets, each containing 10 clips. Then we could calculate -- that is, aggregate -- the Phit value by each set and player. 
+A very straigforward way to examine this question would be to divide the 30 videos clips into three sets, each containing 10 clips. Then we could calculate -- that is, aggregate -- the _Phit_ value by each set and player. 
 
-Recoding video_id to set
+Recoding video\_id into a new variable, _set_
 --------------------------
-There is variable video_id, which coded the order of the videos from 0 to 29. We can use it to form a new variable set. 
+There is the variable _video\_id_, which codes the order of the videos from 0 to 29. We can use it to form a new variable called _set_. 
 
 ```{r}
 # Using a quite easy to understand recode function from package car
 require(car)
 game.raw$set <- recode(game.raw$video_id, "0:9=1; 10:19=2; 20:29=3")
 
-# Making the same thing with some math and using function floor to round downwards. 
+# The same result can be obtained by doing some math and using the function "floor" to round downwards. 
 # E.g. 7 / 10 = 0.7; floor(0.7) = 0; 0 + 1 = 1
+
 game.raw$set2 <- floor(game.raw$video_id / 10) + 1
 
 # The results are identical. It is up to you which one to use.  
-game.raw$set == game.raw$set2
+identical(game.raw$set, game.raw$set2)
 ```
 
-Finally, it is a good to convert set explicitly to ordered factor.
+Finally, it is a good idea to convert the variable _set_ explicitly into an ordered factor.
 
 ```{r}
 game.raw$set <- ordered(game.raw$set)
@@ -57,7 +58,7 @@ params <- ddply(game.raw, .(age_grp, player_id, set), summarize,
 head(params)
 ```
 
-We could also include more parameters to the calculation.
+We could also include more parameters in the calculation.
 
 ```{r}
 params <- ddply(game.raw, .(age_grp, player_id, set), summarize,
@@ -67,10 +68,9 @@ params <- ddply(game.raw, .(age_grp, player_id, set), summarize,
 head(params)
 ```
 
-We calcualte both Phit and PcorrectRejection. Then we calculate accuracy by adding them. This is possible already here, because the variable Phit and PcorrectRejection are created before accuracy. 
+We calculate both _Phit_ and _PcorrectRejection_. Then we calculate _accuracy_ by adding them. This is possible already here, inside the ddply-call, because the variable _Phit_ and _PcorrectRejection_ are created before accuracy. 
 
-
-In order to answer the question, it would be great to make first a plot and then repeated measures ANOVA. In the next section we will use ggplot2 to make some fancier plots, but let's just stick to the R's in-built plotting tools.  
+To answer the analysis question, it makes sense to first produce a plot and then do a repeated measures ANOVA. In the next section we will use ggplot2 to make some fancier plots, but let's just stick to the R's built-in plotting tools for now.  
 
 ```{r}
 # boxplot
@@ -83,16 +83,16 @@ interaction.plot(params$set, params$age_grp, params$accuracy)
 Repeated-measures ANOVA
 -------------------------
 
-Making repeated measures ANOVAs in R are is a bit complicated using the in-built functions because you need to understand what you are doing. There I recommed using package ez. 
+Calculating a repeated measures ANOVAs in R is a bit complicated using the built-in functions because you need to understand what you are doing. There I recommed using package ez. 
 
 
 ```{r}
 ##################################################################################
-# Before making anovas with R, set the default contrasts to orthogonal, 
-# if want to have results comparable to SPSS. 
+# Before calculating anovas using R, set the default contrasts to orthogonal, 
+# if you want to have results comparable to SPSS. 
 #
 # Especially, if you want to use type III Sum of Squares like in SPSS by default, 
-# you MUST use orthogonal contrasts! Otherwise your results may be wrong. 
+# you MUST use orthogonal contrasts! Otherwise your results may end up wrong. 
 ##################################################################################
 options(contrasts = c("contr.sum", "contr.poly")) 
 
@@ -102,9 +102,8 @@ fm <- ezANOVA(params,
         wid=player_id,
         within = .(set),
         between = .(age_grp),
-        type=3) # we ask type III Sum of Squares
-# If you didn't convert set to a factor, you will run into problems here, because ezANOVA treats it 
-# numeric and it confuses it
+        type=3) # we ask for type III Sum of Squares
+# If you didn't convert the variable "set" into a factor, you will run into problems here, because ezANOVA # will then treat it as numeric, which will produce incorrect results
 
 print(fm)
 ```
@@ -112,7 +111,8 @@ print(fm)
 How about the post-hoc testing? Ask the ezANOVA to provide the linear model also, and then feed it to lsmeans. 
 
 ```{r}
-# I repeat this here: Orthogonal contrasts never forget with type III Sum of Squares! 
+# I repeat this here: Never forget to use orthogonal contrasts with type III Sum of Squares! 
+
 options(contrasts = c("contr.sum", "contr.poly")) 
 
 fm <- ezANOVA(params, 
@@ -136,7 +136,7 @@ summary(lsmeans(fm$aov, pairwise ~ set), adjust="holm")
 lsmeans(fm$aov, poly ~ set)
 ```
 
-Because we the main effect of set was significant (and the interaction was not), and the polynomial contrasts indicate positive linear effect, we can conclude that the players are learning.
+Because the main effect of set was significant (and the interaction was not), and the polynomial contrasts indicate positive linear effect, we can conclude that the players are learning.
 
 ```{r}
 # It is possible to investigate interactions also, but remember that 

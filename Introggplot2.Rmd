@@ -54,6 +54,7 @@ head(game.wmc)
 So what would have been the incorrect data format in this case? The long format (with some of the unnecessary variables removed) would have been
 
 ```{r}
+library(reshape2)
 melt(game.wmc, id.vars= c("player_id", "age_grp"), measure.vars=c("pcu_score","accuracy"))
 ```
 
