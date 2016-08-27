@@ -83,17 +83,12 @@ interaction.plot(params$set, params$age_grp, params$accuracy)
 Repeated-measures ANOVA
 -------------------------
 
-Calculating a repeated measures ANOVAs in R is a bit complicated using the built-in functions because you need to understand what you are doing. There I recommed using package ez. 
-
+For repeated measures ANOVA, I recommend using the function _ezANOVA_ from the package _ez_. With repeated measures designs, you must check for the sphericity and if it is not met, use e.g. Greenhouse-Gaisser correction. _ezANOVA_ will produce run the tests and calculate also the corrected values by default.  
 
 ```{r}
-##################################################################################
-# Before calculating anovas using R, set the default contrasts to orthogonal, 
-# if you want to have results comparable to SPSS. 
-#
-# Especially, if you want to use type III Sum of Squares like in SPSS by default, 
-# you MUST use orthogonal contrasts! Otherwise your results may end up wrong. 
-##################################################################################
+# Set orthogonal contrasts, because we will use type III Sum of Squares
+# If you don't understand why, read the lecture notes about _ANOVA_.
+# The defaults contrasts in R are wrong for calculating type III Sum of Squares. 
 options(contrasts = c("contr.sum", "contr.poly")) 
 
 require(ez)
@@ -103,12 +98,17 @@ fm <- ezANOVA(params,
         within = .(set),
         between = .(age_grp),
         type=3) # we ask for type III Sum of Squares
-# If you didn't convert the variable "set" into a factor, you will run into problems here, because ezANOVA # will then treat it as numeric, which will produce incorrect results
+
+# If you didn't convert the variable "set" into a factor, you may run into problems here, 
+# because ezANOVA will then treat it as numeric, which will produce incorrect results
 
 print(fm)
 ```
 
-How about the post-hoc testing? Ask the ezANOVA to provide the linear model also, and then feed it to lsmeans. 
+Post hoc -testing
+----------------------------
+
+For post hoc testing, ask _ezANOVA_ to provide the linear model also, and then inspect it with Linear Squares Means. 
 
 ```{r}
 # I repeat this here: Never forget to use orthogonal contrasts with type III Sum of Squares! 
@@ -121,7 +121,7 @@ fm <- ezANOVA(params,
         within = .(set),
         between = .(age_grp),
         type=3,
-        return_aov=T) # get the model
+        return_aov=T) # give the model
 
 require(lsmeans)
 
@@ -131,8 +131,7 @@ lsmeans(fm$aov, pairwise ~ set)
 summary(lsmeans(fm$aov, pairwise ~ set), adjust="bonferroni") 
 summary(lsmeans(fm$aov, pairwise ~ set), adjust="holm") 
 
-
-# polynomial contrast
+# polynomial post hoc
 lsmeans(fm$aov, poly ~ set)
 ```
 
@@ -140,13 +139,13 @@ Because the main effect of set was significant (and the interaction was not), an
 
 ```{r}
 # It is possible to investigate interactions also, but remember that 
-# F test for interaction was not significant. So there are for 
+# F test for interaction was not significant. So these are for 
 # illustration only.
 
 # a bit complicated and makes too many tests
 lsmeans(fm$aov, pairwise ~ set*age_grp)
 
-# maybe better
+# You could also calculate the effect of set for each age group
 lsmeans(fm$aov, pairwise ~ set | age_grp)
 lsmeans(fm$aov, poly ~ set | age_grp)
 ```

@@ -55,7 +55,17 @@ head(game.wide)
 
 # Let's give the variables better names:
 names(game.wide) <- c("gender", "player_id", paste("set", sep="", 1:3))
+```
 
+Now we could visualize how performance in the first set is related to the performance in the third set. This is not something you could easily do in the long format. 
+
+```{r}
+require(ggplot2)
+ggplot(game.wide, aes(x=set1, y=set3)) + geom_point()
+```
+
+
+```{r}
 # Let's also calculate the variance-covariance matrix and the correlation matrix:
 cov(game.wide[,3:5])
 cor(game.wide[,3:5])
