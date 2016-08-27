@@ -4,7 +4,8 @@
 
 #####
 # 1) Load the dataset "sleep" from the R dataset repository using the command "data(sleep)".
-#    Get accustomed to the data. What are the variables? What do they represent?
+#    Get acquainted with the data. What are the variables? What do they represent?
+# With built-in datasets, the command ?[datasetname] also works: try ?sleep
 
 
 #####
@@ -17,7 +18,7 @@
 
 ### 
 # 4) The data is in the long format. Reshape the data to wide format, so the two observations
-# from the same participant (denoted with variable group) are on their own variables. 
+# from the same participant (denoted with variable group) are in their own variables. 
 
 ###
 # 5) Create a scatter plot where the extra hours for drug 1 are on the x-axis, and
