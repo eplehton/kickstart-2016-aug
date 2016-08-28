@@ -58,7 +58,7 @@ library(reshape2)
 melt(game.wmc, id.vars= c("player_id", "age_grp"), measure.vars=c("pcu_score","accuracy"))
 ```
 
-Here, the value of "pcu_score" on the first row belongs together with the value of "accuracy" on 23rd row, and the scatterplot couldn't be drawn.
+Here, the value of "pcu_score" on the first row belongs together with the value of "accuracy" on 19th row, and the scatterplot couldn't be drawn.
 
 But on we go! Let's add some more mapping between aesthetics and data. In ggplot-speak, "aesthetic" refers to anything you can see. Let's add a mapping to colour...
 

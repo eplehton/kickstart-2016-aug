@@ -204,7 +204,7 @@ melt(game.wmc, id.vars= c(&quot;player_id&quot;, &quot;age_grp&quot;), measure.v
 ## 34 2016021006       C  accuracy 0.7468354
 ## 35 2016021007       C  accuracy 0.6835443
 ## 36 2016021102       C  accuracy 0.5949367</code></pre>
-<p>Here, the value of “pcu_score” on the first row belongs together with the value of “accuracy” on 23rd row, and the scatterplot couldn’t be drawn.</p>
+<p>Here, the value of “pcu_score” on the first row belongs together with the value of “accuracy” on 19th row, and the scatterplot couldn’t be drawn.</p>
 <p>But on we go! Let’s add some more mapping between aesthetics and data. In ggplot-speak, “aesthetic” refers to anything you can see. Let’s add a mapping to colour…</p>
 <pre class="r"><code>ggplot(game.wmc, aes(x=pcu_score, y=accuracy, colour=age_grp)) + 
   geom_point() </code></pre>
