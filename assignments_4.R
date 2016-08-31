@@ -24,10 +24,11 @@
 
 ##################
 
-# 4) Load the population data again (Population_in_Finland.csv) and divide the municipalities according to their size and
-# population change (increasing, decreasing). 
+# 4) Load the population data again (Population_in_Finland.csv) and divide the municipalities according to their size 
+# (e.g. largish > 50 000, smallish) and population change (increasing, decreasing). 
 #
-# Hint: If you have completed the assignment, it is easy to use the function "source" to reload it. 
+# Hint: If you have completed the previous assignment where you loaded the data, 
+# it is easy to use the function "source" to reload it
 
 
 

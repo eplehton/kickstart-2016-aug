@@ -8,7 +8,7 @@ output: html_document
 
 In the following, we will demonstrate how you would calculate one way or two-way ANOVAs in R. 
 
-We will use the same data as in the _Testing for association between two continous variables_.
+We will use the same game data as in the previous session. 
 
 
 ```{r}

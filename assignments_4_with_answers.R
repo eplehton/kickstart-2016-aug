@@ -37,10 +37,11 @@ t.test(accuracy ~ gender, game.wmc, conf.level=0.99, var.equal=T)
 wilcox.test(accuracy ~ gender, data=game.wmc)
 
 #################
-# 4) Load the population data again (Population_in_Finland.csv) and divide the municipalities according to their size and
-# population change (increasing, decreasing). 
+# 4) Load the population data again (Population_in_Finland.csv) and divide the municipalities according to their size 
+# (e.g. largish > 50 000, smallish) and population change (increasing, decreasing). 
 #
-# Hint: If you have completed the assignment, it is easy to use the function "source" to reload it. 
+# Hint: If you have completed the previous assignment where you loaded the data, 
+# it is easy to use the function "source" to reload it
 
 source('assignments_4_with_answers.R') # check the path and file name so that they match
 

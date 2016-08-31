@@ -13,6 +13,10 @@ Finland <- read.csv("Population_in_Finland.csv", header=TRUE, skip=5)
 #
 # a) with a largish population (> 50 000) vs. those with a small population
 # b) with an increasing population vs. a decreasing population.
+#
+# In the previous exercise you might have already made subsets of the data,
+# but now you need to create variables into the data which denotes if the city is largish or smallish, 
+# or decreasing or increasing in population.
 
 head(Finland)
 Finland$large <- ifelse(Finland$X31.12.2014.Total > 50000,1,0)
